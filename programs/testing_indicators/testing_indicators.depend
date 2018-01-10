@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1515591993 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
+1515593683 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
 	<iostream>
 	"TradingIndicators.hpp"
 	"ReadingData.hpp"

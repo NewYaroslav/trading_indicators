@@ -200,9 +200,9 @@ int CurrencyQuote::openFile(std::string name) {
                         //std::cout << "add a date: " << (int)nbYear << "." << (int)nbMonth << "." << (int)nbDay << std::endl;
                         //std::cout << "add a time: " << (int)nbHour << ":" << (int)nbMinutes << ":" << 0 << std::endl;
 
-                        open.push_back(open.back());
-                        high.push_back(high.back());
-                        low.push_back(low.back());
+                        open.push_back(close.back());
+                        high.push_back(close.back());
+                        low.push_back(close.back());
                         close.push_back(close.back());
                     }
                 }
