@@ -35,6 +35,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../../src/Drawing.cpp" />
+		<Unit filename="../../src/Drawing.hpp" />
 		<Unit filename="../../src/NormalizationData.cpp" />
 		<Unit filename="../../src/NormalizationData.hpp" />
 		<Unit filename="../../src/ReadingData.cpp" />

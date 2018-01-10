@@ -346,7 +346,7 @@ namespace Indicators {
 
     /** @brief Поиск экстрерумов. Класс составляет массив последних экстремумов
         @version 1.0
-        @date 09.01.2018
+        @date 11.01.2018
     */
     class SearchExtrema {
         private:
