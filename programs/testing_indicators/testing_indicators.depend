@@ -1,4 +1,31 @@
 # depslib dependency file v1.0
-1385313278 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
+1515591993 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
 	<iostream>
+	"TradingIndicators.hpp"
+	"ReadingData.hpp"
+
+1515448691 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+	"TradingIndicators.hpp"
+
+1515448618 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+	<vector>
+	<numeric>
+	<algorithm>
+
+1515451808 source:d:\yar\_repoz\trading_indicators\src\normalizationdata.cpp
+
+1515593367 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+	"ReadingData.hpp"
+	<string.h>
+	<stdlib.h>
+	<dirent.h>
+	<vector>
+	<string>
+	"stdio.h"
+	<fstream>
+	<iostream>
+
+1515591709 d:\yar\_repoz\trading_indicators\src\readingdata.hpp
+	<vector>
+	<string>
 

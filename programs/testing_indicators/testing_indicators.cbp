@@ -35,6 +35,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../../src/NormalizationData.cpp" />
+		<Unit filename="../../src/NormalizationData.hpp" />
+		<Unit filename="../../src/ReadingData.cpp" />
+		<Unit filename="../../src/ReadingData.hpp" />
 		<Unit filename="../../src/TradingIndicators.cpp" />
 		<Unit filename="../../src/TradingIndicators.hpp" />
 		<Unit filename="main.cpp" />
