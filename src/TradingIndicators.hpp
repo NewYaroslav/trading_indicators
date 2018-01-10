@@ -344,6 +344,37 @@ namespace Indicators {
         double BL2 = 0;
     };
 
+    /** @brief Поиск экстрерумов. Класс составляет массив последних экстремумов
+        @version 1.0
+        @date 09.01.2018
+    */
+    class SearchExtrema {
+        private:
+        int n;
+        double a, b;
+        double a2, b2;
+        bool isStart = false;
+        public:
+        /** @brief Инициализация индикатора
+        */
+        SearchExtrema();
+        /** @brief Инициализация индикатора с заданными настройками
+            @param[in] nLastExtrema количество последних экстрерумов в массиве
+            @warning количество последних экстрерумов в массиве должно быть больше 0
+        */
+        SearchExtrema(int nLastExtrema);
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+        */
+        void update(double input);
+        /** @brief Обновить входные данные индикатора
+            @param[in] high максимум текущего бара
+            @param[in] low минимум текущего бара
+        */
+        void update(double high, double low);
+        std::vector<double> lastExtremums; ///< массив экстрерумов
+    };
+
 }
 
 #endif // TRADINGINDICATORS_HPP_INCLUDED

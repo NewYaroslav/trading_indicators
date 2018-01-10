@@ -528,4 +528,55 @@ namespace Indicators {
         return out;
     }
 
+    SearchExtrema::SearchExtrema() {
+        n = 10;
+    }
+
+    SearchExtrema::SearchExtrema(int nLastExtrema) {
+        n = nLastExtrema;
+    }
+
+    void SearchExtrema::update(double input) {
+        if(isStart == true) {
+            if((a < b && b > input) || (a > b && b < input)) {
+                lastExtremums.push_back(b);
+                if((int)lastExtremums.size() > n) {
+                    lastExtremums.erase(lastExtremums.begin());
+                }
+            }
+        } else {
+            b = input; a = b;
+            isStart = true;
+            return;
+        }
+        a = b;
+        b = input;
+    }
+
+    void SearchExtrema::update(double high, double low) {
+        if(isStart == true) {
+            if(a < b && b > high) {
+                lastExtremums.push_back(b);
+                if((int)lastExtremums.size() > n) {
+                    lastExtremums.erase(lastExtremums.begin());
+                }
+            } else
+            if(a2 > b2 && b2 < low) {
+                lastExtremums.push_back(b2);
+                if((int)lastExtremums.size() > n) {
+                    lastExtremums.erase(lastExtremums.begin());
+                }
+            }
+        } else {
+            b = high; a = b;
+            b2 = low; a2 = b2;
+            isStart = true;
+            return;
+        }
+        a = b;
+        b = high;
+        a2 = b2;
+        b2 = low;
+    }
+
 }
