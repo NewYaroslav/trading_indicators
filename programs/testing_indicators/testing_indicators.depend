@@ -1,20 +1,25 @@
 # depslib dependency file v1.0
-1515626405 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
+1516118269 source:d:\yar\_repoz\trading_indicators\programs\testing_indicators\main.cpp
 	<iostream>
 	"TradingIndicators.hpp"
 	"ReadingData.hpp"
+	"Drawing.hpp"
+	"NormalizationData.hpp"
+	"Scaling.hpp"
 
-1515626230 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+1516115671 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
 	"TradingIndicators.hpp"
+	<iostream>
+	"Drawing.hpp"
 
-1515627008 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+1516118202 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
 	<vector>
 	<numeric>
 	<algorithm>
 
 1515451808 source:d:\yar\_repoz\trading_indicators\src\normalizationdata.cpp
 
-1515624818 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+1515635734 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
 	"ReadingData.hpp"
 	<string.h>
 	<stdlib.h>
@@ -29,14 +34,31 @@
 	<vector>
 	<string>
 
-1515628478 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
+1516046042 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
 	"Drawing.hpp"
 
-1515627498 d:\yar\_repoz\trading_indicators\src\drawing.hpp
+1516046014 d:\yar\_repoz\trading_indicators\src\drawing.hpp
 	<vector>
 	<string>
 	"opencv2/highgui/highgui.hpp"
 	"opencv2/imgproc/imgproc.hpp"
 	"opencv2/core.hpp"
 	"opencv2/opencv.hpp"
+
+1515966248 source:d:\yar\_repoz\trading_indicators\src\scaling.cpp
+	"Scaling.hpp"
+	<string>
+	<algorithm>
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/core.hpp"
+	"opencv2/opencv.hpp"
+	<iostream>
+
+1515964507 d:\yar\_repoz\trading_indicators\src\scaling.hpp
+	<vector>
+
+1515965907 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
+	<vector>
+	<algorithm>
 

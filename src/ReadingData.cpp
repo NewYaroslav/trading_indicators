@@ -36,6 +36,16 @@
 
 CurrencyQuote::CurrencyQuote(std::string name) {
     openFile(name);
+    year.reserve(60);
+    month.reserve(60);
+    day.reserve(60);
+    hour.reserve(60);
+    minutes.reserve(60);
+    seconds.reserve(60);
+    open.reserve(60);
+    high.reserve(60);
+    low.reserve(60);
+    close.reserve(60);
 }
 
 void CurrencyQuote::tickMinutes(int& year, int& month, int& day, int& hour, int& minutes) {

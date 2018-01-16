@@ -59,25 +59,64 @@ namespace Normalization {
     template<class dataType, class dataType2>
     void calcZscore(std::vector<dataType>& in, std::vector<dataType2>& out, double d = 1.0) {
         double mean = 0;
-        for(int k = 0; k < in.size(); k++) {
+        for(int k = 0; k < (int)in.size(); k++) {
             mean += in[k];
         }
         mean /= (double)in.size();
 
         double diff = 0;
-        for(int k = 0; k < in.size(); k++) {
+        for(int k = 0; k < (int)in.size(); k++) {
             diff += ((in[k] - mean) * (in[k] - mean));
         }
         double stdDev = std::sqrt(diff / (double) (in.size() - 1));
 
         out.resize(in.size());
         double dix =  d * stdDev;
-        for(int k = 0; k < in.size(); k++) {
+        for(int k = 0; k < (int)in.size(); k++) {
             out[k] = (in[k] - mean) / dix;
             if(out[k] > 1.0) out[k] = 1.0;
             if(out[k] < -1.0) out[k] = -1.0;
         }
     }
+
+    /** @brief Посчитать массив разности элементов
+        @param[in] in входные данные для подсчета разницы
+        @param[out] out массив с разностью элементов
+    */
+    template<class dataType, class dataType2>
+    void calcDifference(std::vector<dataType>& in, std::vector<dataType2>& out) {
+        if(in.size() < 2) {out.clear(); return;};
+        out.resize(in.size() - 1);
+        for(int i = 1; i < (int)in.size(); i++) {
+            out[i - 1] = in[i] - in[i - 1];
+        }
+    }
+
+    /** @brief Посчитать массив разности элементов
+        @param[in] in входные данные для подсчета разницы
+        @param[out] out массив с разностью элементов
+    */
+    template<class dataType, class dataType2>
+    void calcMaxAmplitude(std::vector<dataType>& input, std::vector<dataType2>& output) {
+        dataType maxData = *std::max_element(input.begin(), input.end());
+        dataType minData = *std::min_element(input.begin(), input.end());
+        double ampl = maxData - minData;
+        output.resize(input.size());
+        for(int i = 0; i < (int)input.size(); i++) {
+            output[i] = input[i] > 0 ? (input[i] / maxData) : (input[i] / -minData);
+        }
+    }
+
+    template<class dataType, class dataType2>
+    void calcLog(std::vector<dataType>& input, std::vector<dataType2>& output) {
+        output.resize(input.size());
+        for(int i = 0; i < (int)input.size(); i++) {
+            output[i] = std::log(input[i]);
+        }
+    }
+
+
+
 }
 
 #endif // NORMALIZATIONDATA_HPP_INCLUDED

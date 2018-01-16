@@ -27,11 +27,11 @@ namespace Drawing {
         isArrow = arrow;
     }
 
-    void CandlesType::updateIndicator(double data, int pos) {
+    void CandlesType::updataIndicator(double data, int pos) {
         indicator[pos] = data;
     }
 
-    void CandlesType::updateArrow(char arrow) {
+    void CandlesType::updataArrow(char arrow) {
         setArrow(arrow);
     }
 
@@ -46,7 +46,7 @@ namespace Drawing {
         Window::N = n;
     }
 
-    void Window::update(double open, double high, double low, double close) {
+    void Window::updata(double open, double high, double low, double close) {
         CandlesType typeCC(open, close, high, low);
         if((int)data.size() < N) {
             data.push_back(typeCC);
@@ -58,7 +58,7 @@ namespace Drawing {
         }
     }
 
-    void Window::updateLast(double open, double high, double low, double close) {
+    void Window::updataLast(double open, double high, double low, double close) {
         //CandlesType typeCC(open, close, high, low);
         //data[N - 1] = typeCC;
         data[N - 1].open = open;
@@ -87,7 +87,7 @@ namespace Drawing {
 
     void Window::updateIndicator(double dataInd, int pos) {
         if(data.size() > 0)
-        data[data.size() - 1].updateIndicator(dataInd, pos);
+        data[data.size() - 1].updataIndicator(dataInd, pos);
     }
 
     void getCandleGraph(cv::Mat& out, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, cv::Scalar backgroundColor2, cv::Scalar lineColor) {
@@ -196,6 +196,120 @@ namespace Drawing {
         std::string imageName = name + ".jpg";
         cv::imwrite(imageName, output);
         output.release();
+    }
+
+    char drawOscilloscope4xBeam(
+        std::string name, std::string text,
+        std::vector<double> in1, std::vector<double> in2, std::vector<double> in3, std::vector<double> in4,
+        int width, int height, int mask) {
+        std::vector<int> out1(width);
+        std::vector<int> out2(width);
+        std::vector<int> out3(width);
+        std::vector<int> out4(width);
+        int stop1 = 0, stop2 = 0, stop3 = 0, stop4 = 0;
+        std::vector<int> arraysize(4);
+        arraysize[0] = in1.size(); arraysize[1] = in2.size();
+        arraysize[2] = in3.size(); arraysize[3] = in4.size();
+        int maxArraySize = *std::max_element(arraysize.begin(), arraysize.end());
+        if (maxArraySize < 2) return 0;
+        // создадим картинку
+        cv::Mat output(cv::Size(width, height), CV_8UC3);
+        output = cv::Mat::zeros(output.size(),CV_8UC3);
+        std::vector<double> all;
+        std::copy(in1.begin(), in1.end(), std::back_inserter(all));
+        std::copy(in2.begin(), in2.end(), std::back_inserter(all));
+        std::copy(in3.begin(), in3.end(), std::back_inserter(all));
+        std::copy(in4.begin(), in4.end(), std::back_inserter(all));
+        double minData = *std::min_element(all.begin(), all.end());
+        double maxData = *std::max_element(all.begin(), all.end());
+        double stepData =  (double)maxArraySize / (double)width; // шаг
+        //double amplitudeData = maxData - minData;
+        double aver = ((double)(maxData - minData) / 2.0) + minData; // среднее значение
+        double param = (std::abs(maxData - aver) > std::abs(aver - minData)) ? std::abs(maxData - aver)  : std::abs(aver - minData);
+        double sacle = 0.8 * ((double)((double)height/2.0)/(double)param);
+        double offset = 0.0;
+        int prePos = 0;
+        for (int i = 0; i < width; i ++) {
+            int pos = offset;
+            if (prePos != pos) {
+                if ((pos + 1) < maxArraySize) {
+                    cv::line(output, cv::Point(i, 0), cv::Point(i, height- 1), cv::Scalar(55,25,0));
+                }
+                prePos = pos;
+            }
+            offset += stepData;
+        }
+        offset = 0.0; prePos = 0;
+        for (int i = 0; i < width; i ++) {
+            int pos = offset;
+            if (pos < (int)in1.size()) {
+                out1[i] = (height/2) - ((in1[pos] - aver) * sacle);
+                stop1 = i;
+                if (i % (width/4) == 0 && mask & 0x01) {
+                    std::string value = std::to_string(in1[pos]);
+                    cv::putText(output, value, cv::Point(i,out1[i] - 20.0), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,255,255), 1, 8, 0);
+                }
+            }
+            if (pos < (int)in2.size()) {
+                out2[i] = (height/2) - ((in2[pos] - aver) * sacle);
+                stop2 = i;
+                if (i % (width/4) == 0 && mask & 0x02) {
+                    std::string value = std::to_string(in2[pos]);
+                    cv::putText(output, value, cv::Point(i,out2[i] + 20.0), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,255,255), 1, 8, 0);
+                }
+            }
+            if (pos < (int)in3.size()) {
+                out3[i] = (height/2) - ((in3[pos] - aver) * sacle);
+                stop3 = i;
+                if (i % (width/4) == 0 && mask & 0x04) {
+                    std::string value = std::to_string(in3[pos]);
+                    cv::putText(output, value, cv::Point(i,out3[i] - 40.0), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,255,255), 1, 8, 0);
+                }
+            }
+            if (pos < (int)in4.size()) {
+                out4[i] = (height/2) - ((in4[pos] - aver) * sacle);
+                stop4 = i;
+                if (i % (width/4) == 0 && mask & 0x08) {
+                    std::string value = std::to_string(in4[pos]);
+                    cv::putText(output, value, cv::Point(i,out4[i] + 40.0), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,255,255), 1, 8, 0);
+                }
+            }
+            offset += stepData;
+        }
+        if (stop1 > 0)
+        for (int i = 0; i < stop1; i ++) {
+            cv::line(output, cv::Point(i, out1[i]), cv::Point(i + 1, out1[i + 1]), cv::Scalar(255,125,0));
+        }
+        for (int i = 0; i < stop2; i ++) {
+            cv::line(output, cv::Point(i, out2[i]), cv::Point(i + 1, out2[i + 1]), cv::Scalar(255,255,0));
+        }
+        for (int i = 0; i < stop3; i ++) {
+            cv::line(output, cv::Point(i, out3[i]), cv::Point(i + 1, out3[i + 1]), cv::Scalar(125,255,0));
+        }
+        for (int i = 0; i < stop4; i ++) {
+            cv::line(output, cv::Point(i, out4[i]), cv::Point(i + 1, out4[i + 1]), cv::Scalar(0,255,255));
+        }
+        std::string textMax = "Max level = "; textMax += std::to_string(maxData);
+        std::string textMin = "Min level = "; textMin += std::to_string(minData);
+        cv::putText(output, textMax, cv::Point(8, 20), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(0,0,255), 1, 8, 0);
+        cv::putText(output, textMin, cv::Point(8, height - 10), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,0,0), 1, 8, 0);
+
+        cv::putText(output, "1", cv::Point(width/4, 10), CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255,125,0), 1, 8, 0);
+        cv::putText(output, "2", cv::Point(width/4 + 10, 10), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(255,255,0), 1, 8, 0);
+        cv::putText(output, "3", cv::Point(width/4 + 20, 10), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(125,255,0), 1, 8, 0);
+        cv::putText(output, "4", cv::Point(width/4 + 30, 10), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(0,255,255), 1, 8, 0);
+        cv::putText(output, text, cv::Point(8, 40), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(125,255,0), 1, 8, 0);
+
+        if(mask == 1) {
+            std::string imageName = name + ".jpg";
+            cv::imwrite(imageName, output);
+        }
+
+        cv::imshow(name, output);
+        cv::waitKey(5);
+
+        output.release();
+        return 0;
     }
 
 }

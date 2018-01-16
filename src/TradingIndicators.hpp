@@ -45,9 +45,9 @@ namespace Indicators {
         // подаем на вход индикатора значение 100,
         // на выходе получаем среднее
         // значение за последние 5 отсчетов.
-        double output = iSMA.update(100);
-        double output = iSMA.update(100);
-        double output = iSMA.update(100);
+        double output = iSMA.updata(100);
+        double output = iSMA.updata(100);
+        double output = iSMA.updata(100);
         @endcode
     */
     class SMA {
@@ -66,7 +66,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Класс экспоненциальной скользящей средней
@@ -91,7 +91,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Класс взвешенной скользящей средней
@@ -116,7 +116,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Простая скользящая медиана
@@ -139,7 +139,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Класс индекса относительной силы
@@ -165,7 +165,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Класс индекса относительной силы с использованием WMA вместо SMA
@@ -191,7 +191,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
-        double update(double input);
+        double updata(double input);
     };
 
     /** @brief Линии Боллинджера
@@ -215,7 +215,7 @@ namespace Indicators {
         /** @brief Обновить входные данные индикатора
             @param[in] input входные данные индикатора
         */
-        void update(double input);
+        void updata(double input);
         double tl = 0; ///< верхняя полоса боллинджера
         double bl = 0; ///< нижняя полоса боллинджера
         double ml = 0; ///< простая скользящая средняя
@@ -255,7 +255,7 @@ namespace Indicators {
         int LengthMA = 10;
         int bars = 0;
 
-        double _update(double price, int length, int r);
+        double _updata(double price, int length, int r);
         public:
         /** @brief Инициализация индикатора со стандартными настройками (период равен 3)
         */
@@ -269,7 +269,7 @@ namespace Indicators {
             @param[in] in входные данные индикатора
             @return значение индикатора
         */
-        double update(double in);
+        double updata(double in);
     };
 
     /** @brief Скользящая средняя FATL
@@ -292,7 +292,7 @@ namespace Indicators {
             @param[in] in входные данные индикатора
             @return значение индикатора
         */
-        double update(double in);
+        double updata(double in);
     };
 
     /** @brief Скользящая средняя SATL
@@ -315,7 +315,7 @@ namespace Indicators {
             @param[in] in входные данные индикатора
             @return значение индикатора
         */
-        double update(double in);
+        double updata(double in);
     };
 
     /** @brief Индикатор RBCI
@@ -336,7 +336,7 @@ namespace Indicators {
         double out = 0;
         RBCI();
         RBCI(int BBPeriod, double BandsDeviation);
-        double update(double in);
+        double updata(double in);
         double TL2= 0;
         double TL1 = 0;
         double ML = 0;
@@ -350,10 +350,12 @@ namespace Indicators {
     */
     class SearchExtrema {
         private:
+        int isMinMax = 0;
         int n;
         double a, b;
         double a2, b2;
         bool isStart = false;
+        double extDeviation = 0.05;
         public:
         /** @brief Инициализация индикатора
         */
@@ -363,16 +365,116 @@ namespace Indicators {
             @warning количество последних экстрерумов в массиве должно быть больше 0
         */
         SearchExtrema(int nLastExtrema);
+        /** @brief Инициализация индикатора с заданными настройками
+            @param[in] nLastExtrema количество последних экстрерумов в массиве
+            @warning количество последних экстрерумов в массиве должно быть больше 0
+        */
+        SearchExtrema(int nLastExtrema, double extDeviation);
         /** @brief Обновить входные данные индикатора
             @param[in] input входные данные индикатора
         */
-        void update(double input);
+        void updata(double input);
         /** @brief Обновить входные данные индикатора
             @param[in] high максимум текущего бара
             @param[in] low минимум текущего бара
         */
-        void update(double high, double low);
+        void updata(double high, double low);
         std::vector<double> lastExtremums; ///< массив экстрерумов
+    };
+
+#if(0)
+    class ZigZag {
+        private:
+        int step = 0;
+        int extDepth = 12;
+        double extDeviation= 0.05;
+        int extBackstep = 3;
+        int isMinimumSearch = 1;
+        int nLastExtrema = 10;
+        double lastMin;
+        double lastMax;
+        std::vector<double> vDepth;
+        public:
+        ZigZag();
+        ZigZag(int extDepth, double extDeviation, int extBackstep, int nLastExtrema);
+        void updata(double input);
+        void updata(double high, double low);
+        std::vector<double> lastExtremums; ///< массив экстрерумов
+    };
+#endif
+
+    /** @brief Класс обрабатывает одновременно несколько скользящих средних
+        @version 1.0
+        @date 14.01.2018
+    */
+    template <class MA_TYPE>
+    class MultiMa {
+        private:
+        std::vector<MA_TYPE> vMa;
+        int nMa;
+        public:
+        MultiMa() {};
+        /** @brief Инициализировать простые скользящие
+            @param[in] startPeriod минимальный период простой скользящей
+            @param[in] stepPeriod шаг периода
+            @param[in] nMa количество простых скользящих
+        */
+        MultiMa(int startPeriod, int stepPeriod, int nMa) {
+            for(int n = 0; n < nMa; n++) {
+                vMa.push_back(MA_TYPE(startPeriod + n*stepPeriod));
+            }
+            vOutput.resize(nMa);
+            MultiMa::nMa = nMa;
+        };
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+        */
+        void updata(double input) {
+            for(int n = 0; n < nMa; n++) {
+                vOutput[n] = vMa[n].updata(input);
+            }
+        };
+        std::vector<double> vOutput; ///< массив значений простых скользящих
+    };
+
+    /** @brief Скользящее окно
+        @version 1.0
+        @date 14.01.2018
+    */
+    class Window {
+        private:
+        int n;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
+        */
+        Window();
+        /** @brief Инициализация индикатора с заданным периодом
+            @param[in] period период индикатора
+        */
+        Window(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+            @return значение индикатора
+        */
+        std::vector<double> updata(double input);
+        std::vector<double> data; ///< массив последних n элементов
+    };
+
+    class BasicExtrema {
+        private:
+        int nWinow;
+        int nExtrema;
+        std::vector<double> data;
+        void getExtrema(std::vector<double>& in, std::vector<double>& out, int dist);
+        public:
+        BasicExtrema();
+        BasicExtrema(int nWinow, int nExtrema);
+        void updata(double input);
+    };
+
+    class ExtremaDetector {
+        public:
+        //ExtremaDetector
     };
 
 }

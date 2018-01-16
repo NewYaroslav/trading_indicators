@@ -64,8 +64,8 @@ namespace Drawing {
         void setArrowDown();
         void setArrow(char arrow);
         // функции для обновления данных
-        void updateIndicator(double data, int pos);
-        void updateArrow(char arrow);
+        void updataIndicator(double data, int pos);
+        void updataArrow(char arrow);
 
         double open;
         double close;
@@ -86,8 +86,8 @@ namespace Drawing {
         public:
         Window();
         Window(int n);
-        void update(double open, double high, double low, double close);
-        void updateLast(double open, double high, double low, double close);
+        void updata(double open, double high, double low, double close);
+        void updataLast(double open, double high, double low, double close);
         void setArrow(char arrow);
         void setIndicator(double dataInd);
         void updateIndicator(double dataInd, int pos);
@@ -103,6 +103,11 @@ namespace Drawing {
     void viewCandleGraph(std::string name, std::vector<CandlesType>& in, int flag);
 
     void saveCandleGraph(std::string name, std::vector<CandlesType>& in);
+
+    char drawOscilloscope4xBeam(
+    std::string name, std::string text,
+    std::vector<double> in1, std::vector<double> in2, std::vector<double> in3, std::vector<double> in4,
+    int width, int height, int mask);
 
 }
 

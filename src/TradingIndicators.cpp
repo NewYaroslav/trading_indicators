@@ -23,6 +23,8 @@
 */
 
 #include "TradingIndicators.hpp"
+#include <iostream>
+#include "Drawing.hpp"
 
 namespace Indicators {
 
@@ -34,13 +36,13 @@ namespace Indicators {
         n = period;
     }
 
-    double SMA::update(double input) {
+    double SMA::updata(double input) {
         data.push_back(input);
         if((int)data.size() > n) {
             data.erase(data.begin());
         }
-        double sum = std::accumulate(data.begin(), data.end(), 0);
-        sum /= (double)n;
+        double sum = std::accumulate(data.begin(), data.end(), double(0));
+        sum /= (double)data.size();
         return sum;
     }
 
@@ -54,10 +56,10 @@ namespace Indicators {
         a = 2.0/(double)(n + 1);
     }
 
-    double EMA::update(double input) {
+    double EMA::updata(double input) {
         if((int)data.size() < n) {
             data.push_back(input);
-            double sum = std::accumulate(data.begin(), data.end(), 0);
+            double sum = std::accumulate(data.begin(), data.end(), double(0));
             sum /= (double)n;
             prevOut = sum;
             return sum;
@@ -76,10 +78,10 @@ namespace Indicators {
         a = 1.0/(double)n;
     }
 
-    double WMA::update(double input) {
+    double WMA::updata(double input) {
         if((int)data.size() < n) {
             data.push_back(input);
-            double sum = std::accumulate(data.begin(), data.end(), 0);
+            double sum = std::accumulate(data.begin(), data.end(), double(0));
             sum /= (double)n;
             prevOut = sum;
             return sum;
@@ -96,7 +98,7 @@ namespace Indicators {
         n = period;
     }
 
-    double SMM::update(double input) {
+    double SMM::updata(double input) {
         data.push_back(input);
         if((int)data.size() > n) {
             data.erase(data.begin());
@@ -119,7 +121,7 @@ namespace Indicators {
         iD = SMA(n);
     }
 
-    double RSI::update(double input) {
+    double RSI::updata(double input) {
         if(isStart == false) {
             prevInput = input;
             isStart = true;
@@ -134,8 +136,8 @@ namespace Indicators {
             d = prevInput - input;
             u = 0.0;
         }
-        u = iU.update(u);
-        d = iD.update(d);
+        u = iU.updata(u);
+        d = iD.updata(d);
         prevInput = input;
         if (d == 0.0) {
             return 100.0;
@@ -157,7 +159,7 @@ namespace Indicators {
         iD = WMA(n);
     }
 
-    double WRSI::update(double input) {
+    double WRSI::updata(double input) {
         if(isStart == false) {
             prevInput = input;
             isStart = true;
@@ -172,8 +174,8 @@ namespace Indicators {
             d = prevInput - input;
             u = 0.0;
         }
-        u = iU.update(u);
-        d = iD.update(d);
+        u = iU.updata(u);
+        d = iD.updata(d);
         prevInput = input;
         if (d == 0.0) {
             return 100.0;
@@ -193,12 +195,12 @@ namespace Indicators {
         n = period;
     }
 
-    void BollingerBands::update(double input) {
+    void BollingerBands::updata(double input) {
         data.push_back(input);
         if((int)data.size() > n) {
             data.erase(data.begin());
         }
-        ml = std::accumulate(data.begin(), data.end(), 0);
+        ml = std::accumulate(data.begin(), data.end(), double(0));
         ml /= (double)n;
         double sum = 0;
         for (int i = 0; i < (int)data.size(); i++) {
@@ -220,7 +222,7 @@ namespace Indicators {
         nlm_values.resize(3);
     }
 
-    double NoLagMa::_update(double price, int length, int r) {
+    double NoLagMa::_updata(double price, int length, int r) {
         if((int)nlm_prices.size() != bars) {
             nlm_prices.resize(bars);
         }
@@ -261,9 +263,9 @@ namespace Indicators {
         else return 0;
     }
 
-    double NoLagMa::update(double in) {
+    double NoLagMa::updata(double in) {
         bars++;
-        return _update(in, LengthMA, bars - 1);
+        return _updata(in, LengthMA, bars - 1);
     }
 
     FATL::FATL() {
@@ -271,7 +273,7 @@ namespace Indicators {
         FATLPeriod = 39;
     }
 
-    double FATL::update(double in) {
+    double FATL::updata(double in) {
         tick++;
         if(tick < FATLPeriod) {
             for(int i = FATLPeriod - 1; i > 0; i--) {
@@ -338,7 +340,7 @@ namespace Indicators {
         SATLPeriod = 65;
     }
 
-    double SATL::update(double in) {
+    double SATL::updata(double in) {
         tick++;
         if(tick < SATLPeriod) {
             for(int i = SATLPeriod - 1; i > 0; i--) {
@@ -441,7 +443,7 @@ namespace Indicators {
     }
 
 
-    double RBCI::update(double in) {
+    double RBCI::updata(double in) {
         tick++;
         if(tick < RBCIPeriod) {
             for(int i = RBCIPeriod - 1; i > 0; i--) {
@@ -517,7 +519,7 @@ namespace Indicators {
                -1.6156173970 * price[55];
         if(out > prevOut) {trendState = 1;}
         else if(out < prevOut) {trendState = -1;} else {trendState = 0;}
-        iBB.update(out);
+        iBB.updata(out);
         TL2 = iBB.tl;
         ML = iBB.ml;
         BL2 = iBB.bl;
@@ -536,13 +538,48 @@ namespace Indicators {
         n = nLastExtrema;
     }
 
-    void SearchExtrema::update(double input) {
+    SearchExtrema::SearchExtrema(int nLastExtrema, double extDeviation) {
+        n = nLastExtrema;
+        SearchExtrema::extDeviation = extDeviation;
+    }
+
+    void SearchExtrema::updata(double input) {
         if(isStart == true) {
-            if((a < b && b > input) || (a > b && b < input)) {
-                lastExtremums.push_back(b);
-                if((int)lastExtremums.size() > n) {
-                    lastExtremums.erase(lastExtremums.begin());
+            if(a <= b && b > input) {
+                if(lastExtremums.size() > 0) {
+                    if(b > lastExtremums.back() && isMinMax == 1) {
+                        lastExtremums[lastExtremums.size() - 1] = b;
+                    } else if(isMinMax == -1){
+                        lastExtremums.push_back(b);
+                        if((int)lastExtremums.size() > n) {
+                            lastExtremums.erase(lastExtremums.begin());
+                        }
+                    }
+                } else {
+                    lastExtremums.push_back(b);
+                    if((int)lastExtremums.size() > n) {
+                        lastExtremums.erase(lastExtremums.begin());
+                    }
                 }
+                isMinMax = 1;
+            } else
+            if(a >= b && b < input) {
+                if(lastExtremums.size() > 0) {
+                    if(b < lastExtremums.back() && isMinMax == -1) {
+                        lastExtremums[lastExtremums.size() - 1] = b;
+                    } else if(isMinMax == 1){
+                        lastExtremums.push_back(b);
+                        if((int)lastExtremums.size() > n) {
+                            lastExtremums.erase(lastExtremums.begin());
+                        }
+                    }
+                } else {
+                    lastExtremums.push_back(b);
+                    if((int)lastExtremums.size() > n) {
+                        lastExtremums.erase(lastExtremums.begin());
+                    }
+                }
+                isMinMax = -1;
             }
         } else {
             b = input; a = b;
@@ -553,18 +590,38 @@ namespace Indicators {
         b = input;
     }
 
-    void SearchExtrema::update(double high, double low) {
+    void SearchExtrema::updata(double high, double low) {
         if(isStart == true) {
-            if(a < b && b > high) {
-                lastExtremums.push_back(b);
-                if((int)lastExtremums.size() > n) {
-                    lastExtremums.erase(lastExtremums.begin());
+            if((a <= b && b > high) || (a < b && b >= high)) {
+                if(lastExtremums.size() > 0) {
+                    double pDiff = std::min(b, lastExtremums.back())/std::max(b, lastExtremums.back());
+                    if(pDiff > extDeviation) {
+                        lastExtremums.push_back(b);
+                        if((int)lastExtremums.size() > n) {
+                            lastExtremums.erase(lastExtremums.begin());
+                        }
+                    }
+                } else {
+                    lastExtremums.push_back(b);
+                    if((int)lastExtremums.size() > n) {
+                        lastExtremums.erase(lastExtremums.begin());
+                    }
                 }
             } else
-            if(a2 > b2 && b2 < low) {
-                lastExtremums.push_back(b2);
-                if((int)lastExtremums.size() > n) {
-                    lastExtremums.erase(lastExtremums.begin());
+            if((a2 >= b2 && b2 < low) || (a2 > b2 && b2 <= low)) {
+                if(lastExtremums.size() > 0) {
+                    double pDiff = std::min(b2, lastExtremums.back())/std::max(b2, lastExtremums.back());
+                    if(pDiff > extDeviation) {
+                        lastExtremums.push_back(b2);
+                        if((int)lastExtremums.size() > n) {
+                            lastExtremums.erase(lastExtremums.begin());
+                        }
+                    }
+                } else {
+                    lastExtremums.push_back(b2);
+                    if((int)lastExtremums.size() > n) {
+                        lastExtremums.erase(lastExtremums.begin());
+                    }
                 }
             }
         } else {
@@ -577,6 +634,154 @@ namespace Indicators {
         b = high;
         a2 = b2;
         b2 = low;
+    }
+
+#if(0)
+    ZigZag::ZigZag() {};
+
+    ZigZag::ZigZag(int extDepth, double extDeviation, int extBackstep, int nLastExtrema) {
+        ZigZag::extDepth = extDepth;
+        ZigZag::extDeviation = extDeviation;
+        ZigZag::extBackstep = extBackstep;
+        ZigZag::nLastExtrema = nLastExtrema;
+    }
+
+    void ZigZag::updata(double input) {
+        vDepth.push_back(input);
+        if((int)vDepth.size() > extDepth) {
+            vDepth.erase(vDepth.begin());
+            if(isMinimumSearch == 1) {
+                lastMin = *std::min_element(vDepth.begin(), vDepth.end());
+                isMinimumSearch = 0;
+            } else {
+                double minData = *std::min_element(vDepth.begin(), vDepth.end());
+                double maxData = *std::max_element(vDepth.begin(), vDepth.end());
+                double dMin = std::min(minData, lastMin) / std::max(minData, lastMin);
+                double dMax = std::min(maxData, lastMax) / std::max(maxData, lastMax);
+                if(minData < lastMin && dMin > extDeviation) {
+                    lastMin = minData;
+                } else
+                if(maxData < lastMin && dMin > extDeviation) {
+                    lastMin = minData;
+                }
+            }
+        } else {
+            lastMin = *std::min_element(vDepth.begin(), vDepth.end());
+            lastMax = *std::max_element(vDepth.begin(), vDepth.end());
+        }
+    }
+
+    void ZigZag::updata(double high, double low) {
+
+    }
+
+#endif
+
+    Window::Window() {
+        n = 10;
+    }
+
+    Window::Window(int period) {
+        n = period;
+    }
+
+    std::vector<double> Window::updata(double input) {
+        data.push_back(input);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+        }
+        return data;
+    }
+
+    BasicExtrema::BasicExtrema() {};
+
+    BasicExtrema::BasicExtrema(int nWinow, int nExtrema) {
+        BasicExtrema::nWinow = nWinow;
+        BasicExtrema::nExtrema = nExtrema;
+    }
+
+    void BasicExtrema::getExtrema(std::vector<double>& in, std::vector<double>& out, int dist = 1) {
+        if(in.size() < 3) {
+            return;
+        }
+        // находим экстрерумы
+        std::vector<double> _out;
+        _out.reserve(in.size()/3);
+        int isPeak = 0;
+        switch(dist) {
+            case 1:
+                for(int i = 1; i < (int)in.size() - 1; i++) {
+                    double& a =  in[i - 1];
+                    double& b =  in[i];
+                    double& c =  in[i + 1];
+                    if(b > a && isPeak <= 0) {
+                        isPeak = 1;
+                    }
+                    if(b > c && isPeak == 1) {
+                        isPeak = 2;
+                    }
+                    if(b < a && isPeak >= 0) {
+                        isPeak = -1;
+                    }
+                    if(b < c && isPeak == -1) {
+                        isPeak = -2;
+                    }
+                    if(isPeak == 2 || isPeak == -2) {
+                        _out.push_back(b);
+                        isPeak = 0;
+                    }
+                }
+            break;
+            case 2:
+                for(int i = 2; i < (int)in.size() - 2; i++) {
+                    double& a =  in[i - 2];
+                    double& b =  in[i - 1];
+                    double& c =  in[i];
+                    double& d =  in[i + 1];
+                    double& e =  in[i + 2];
+
+                    if(c > a && c > b && c > d && c > e) {
+                        _out.push_back(b);
+                    }
+                    if(c < a && c < b && c < d && c < e) {
+                        _out.push_back(b);
+                    }
+                }
+            break;
+        }
+        out = _out;
+    }
+
+    void BasicExtrema::updata(double input) {
+        // собираем данные
+        data.push_back(input);
+        if((int)data.size() > nWinow) {
+            data.erase(data.begin());
+        } else {
+            return;
+        }
+        // находим экстрерумы
+        std::vector<double> vExtrema;
+        std::vector<double> vExtrema2;
+        std::vector<double> vExtrema3;
+        std::vector<double> vExtrema4;
+        //vExtrema.reserve(nWinow/3);
+        getExtrema(data, vExtrema);
+        getExtrema(vExtrema, vExtrema2, 2);
+        getExtrema(vExtrema2, vExtrema3, 2);
+        getExtrema(vExtrema3, vExtrema4, 2);
+
+        vExtrema.push_back(input);
+        vExtrema2.push_back(input);
+        vExtrema3.push_back(input);
+        vExtrema4.push_back(input);
+
+        std::vector<double> vNull;
+        Drawing::drawOscilloscope4xBeam("BasicExtrema", "BasicExtrema", vExtrema, vNull, vNull, vNull, 800, 400, 0);
+        Drawing::drawOscilloscope4xBeam("BasicExtrema - 2", "BasicExtrema - 2", vExtrema2, vNull, vNull, vNull, 800, 400, 0);
+        Drawing::drawOscilloscope4xBeam("BasicExtrema - 3", "BasicExtrema - 3", vExtrema3, vNull, vNull, vNull, 800, 400, 0);
+        Drawing::drawOscilloscope4xBeam("BasicExtrema - 4", "BasicExtrema - 4", vExtrema4, vNull, vNull, vNull, 800, 400, 0);
+        Drawing::drawOscilloscope4xBeam("BasicExtrema2", "BasicExtrema2", data, vNull, vNull, vNull, 800, 400, 0);
     }
 
 }
