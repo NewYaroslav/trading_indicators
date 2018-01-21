@@ -46,8 +46,14 @@ namespace Normalization {
         dataType minData = *std::min_element(input.begin(), input.end());
         double ampl = maxData - minData;
         output.resize(input.size());
-        for(int i = 0; i < (int)input.size(); i++) {
-            output[i] = normType == 0 ? (double)(input[i] - minData) / ampl : 2.0 * ((double)(input[i] - minData) / ampl) - 1.0;
+        if(ampl != 0) {
+            for(int i = 0; i < (int)input.size(); i++) {
+                output[i] = normType == 0 ? (double)(input[i] - minData) / ampl : 2.0 * ((double)(input[i] - minData) / ampl) - 1.0;
+            }
+        } else {
+            for(int i = 0; i < (int)input.size(); i++) {
+                output[i] = 0.0;
+            }
         }
     }
 

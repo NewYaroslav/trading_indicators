@@ -29,6 +29,8 @@
 #include "FannFunctions.hpp"
 #include <iostream>
 
+#include "Drawing.hpp"
+
 using namespace std;
 
 namespace TrainingFunctions {
@@ -56,16 +58,25 @@ namespace TrainingFunctions {
         for(int i = 0; i < (int)data.size() - nWindow - 1; i++) {
             std::vector<double> vWindow;
             std::vector<double> vOutput(1);
+
             std::copy(data.begin() + i, data.begin() + i + nWindow, std::back_inserter(vWindow));
+
             double maxData = *std::max_element(vWindow.begin(), vWindow.end());
             double minData = *std::min_element(vWindow.begin(), vWindow.end());
             double& temp = data[i + nWindow];
             double out = temp < minData ? 0.0 : temp > maxData ? 1.0 : (temp - minData) / (maxData - minData);
             out = 2.0 * out - 1.0;
             vOutput[0] = out;
+
             Normalization::calcMinMax(vWindow, vWindow, 1);
             Normalization::checkingData(vWindow);
             Normalization::checkingData(vOutput);
+
+            #if(1)
+            std::vector<double> vNull;
+            Drawing::drawOscilloscope4xBeam("vWindow", "Window", vWindow, vNull, vNull, vNull, 800, 400, 0);
+            #endif
+
             FannFunctions::setData(vWindow, vOutput, inputTrain, outputTrain, posSamples);
             posSamples++;
             if(posSamples >= numTrainingSamples) break;
