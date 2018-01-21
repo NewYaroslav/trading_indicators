@@ -58,22 +58,20 @@ namespace Normalization {
     */
     template<class dataType, class dataType2>
     void calcZscore(std::vector<dataType>& in, std::vector<dataType2>& out, double d = 1.0) {
-        double mean = 0;
-        for(int k = 0; k < (int)in.size(); k++) {
-            mean += in[k];
-        }
+        double mean = std::accumulate(in.begin(), in.end(), double(0));
         mean /= (double)in.size();
 
         double diff = 0;
         for(int k = 0; k < (int)in.size(); k++) {
             diff += ((in[k] - mean) * (in[k] - mean));
         }
-        double stdDev = std::sqrt(diff / (double) (in.size() - 1));
+
+        double stdDev = diff > 0 ? std::sqrt(diff / (double) (in.size() - 1)) : 0.0;
 
         out.resize(in.size());
         double dix =  d * stdDev;
         for(int k = 0; k < (int)in.size(); k++) {
-            out[k] = (in[k] - mean) / dix;
+            out[k] = dix != 0 ? (in[k] - mean) / dix : 0.0;
             if(out[k] > 1.0) out[k] = 1.0;
             if(out[k] < -1.0) out[k] = -1.0;
         }
@@ -92,21 +90,40 @@ namespace Normalization {
         }
     }
 
-    /** @brief Посчитать массив разности элементов
-        @param[in] in входные данные для подсчета разницы
-        @param[out] out массив с разностью элементов
+    /** @brief Максимизировать амплитуду
+        @param[in] input входные данные
+        @param[out] output получившееся данные
     */
     template<class dataType, class dataType2>
     void calcMaxAmplitude(std::vector<dataType>& input, std::vector<dataType2>& output) {
         dataType maxData = *std::max_element(input.begin(), input.end());
         dataType minData = *std::min_element(input.begin(), input.end());
-        double ampl = maxData - minData;
         output.resize(input.size());
         for(int i = 0; i < (int)input.size(); i++) {
-            output[i] = input[i] > 0 ? (input[i] / maxData) : (input[i] / -minData);
+            output[i] = input[i] > 0 ? (input[i] / maxData) : (input[i] < 0 ? (input[i] / -minData) : 0.0);
         }
     }
 
+
+    /** @brief Максимизировать амплитуду
+        @param[in] input входные данные
+        @param[out] output получившееся данные
+        @param[in] normData вектор по которому нормируем данные
+    */
+    template<class dataType, class dataType2, class dataType3>
+    void calcMaxAmplitude(std::vector<dataType>& input, std::vector<dataType2>& output, std::vector<dataType3>& normData) {
+        dataType maxData = *std::max_element(normData.begin(), normData.end());
+        dataType minData = *std::min_element(normData.begin(), normData.end());
+        output.resize(input.size());
+        for(int i = 0; i < (int)input.size(); i++) {
+            output[i] = input[i] > 0 ? (input[i] / maxData) : (input[i] < 0 ? (input[i] / -minData) : 0.0);
+        }
+    }
+
+    /** @brief Логарифм от данных
+        @param[in] input входные данные
+        @param[out] output получившееся данные
+    */
     template<class dataType, class dataType2>
     void calcLog(std::vector<dataType>& input, std::vector<dataType2>& output) {
         output.resize(input.size());
@@ -115,7 +132,42 @@ namespace Normalization {
         }
     }
 
+    /** @brief Стандартное отклонение
+        @param[in] input входные данные
+        @param[out] mean среднее значение данных
+        @return стандартное отклонение
+    */
+    template<class dataType>
+    dataType calcStdDev(std::vector<dataType>& in, dataType mean) {
+        double diff = 0;
+        for(int k = 0; k < (int)in.size(); k++) {
+            diff += ((in[k] - mean) * (in[k] - mean));
+        }
+        dataType stdDev = std::sqrt(diff / (double) (in.size() - 1));
+        return stdDev;
+    }
 
+    /** @brief Среднее значение
+        @param[in] input входные данные
+        @return среднее отклонение
+    */
+    template<class dataType>
+    dataType calcMean(std::vector<dataType>& input) {
+        double sum = std::accumulate(input.begin(), input.end(), double(0));
+        sum /= (double)input.size();
+        return sum;
+    }
+
+    /** @brief Проверка данных на диапазон от -1 до 1
+        @param[in] input входные данные
+    */
+    template<class dataType>
+    void checkingData(std::vector<dataType>& input) {
+        for(int k = 0; k < (int)input.size(); k++) {
+            if(input[k] > 1) input[k] = 1.0;
+            else if(input[k] < -1) input[k] = -1.0;
+        }
+    }
 
 }
 

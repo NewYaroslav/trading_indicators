@@ -693,6 +693,39 @@ namespace Indicators {
         return data;
     }
 
+    SearchMinMax::SearchMinMax() {
+        iWindow = Window(10);
+    }
+
+    SearchMinMax::SearchMinMax(int period) {
+        iWindow = Window(period);
+    }
+
+    void SearchMinMax::updata(double input) {
+        iWindow.updata(input);
+        if(isStart == true) {
+            minPrevData = minData;
+            maxPrevData = maxData;
+        }
+        minData = *std::min_element(iWindow.data.begin(), iWindow.data.end());
+        maxData = *std::max_element(iWindow.data.begin(), iWindow.data.end());
+        if(isStart == false) {
+            minPrevData = minData;
+            maxPrevData = maxData;
+            isStart = true;
+        }
+        if(minData != minPrevData) {
+            isNewMin = true;
+        } else {
+            isNewMin = false;
+        }
+        if(maxData != maxPrevData) {
+            isNewMax = true;
+        } else {
+            isNewMax = false;
+        }
+    }
+
     BasicExtrema::BasicExtrema() {};
 
     BasicExtrema::BasicExtrema(int nWinow, int nExtrema) {
@@ -782,6 +815,127 @@ namespace Indicators {
         Drawing::drawOscilloscope4xBeam("BasicExtrema - 3", "BasicExtrema - 3", vExtrema3, vNull, vNull, vNull, 800, 400, 0);
         Drawing::drawOscilloscope4xBeam("BasicExtrema - 4", "BasicExtrema - 4", vExtrema4, vNull, vNull, vNull, 800, 400, 0);
         Drawing::drawOscilloscope4xBeam("BasicExtrema2", "BasicExtrema2", data, vNull, vNull, vNull, 800, 400, 0);
+    }
+
+    ExtremaDetector::ExtremaDetector() {isInit = false; state = 0;};
+
+    void ExtremaDetector::updata(double input) {
+        if(isInit == false) {
+            prevInput = input;
+            isInit = true;
+            return;
+        } else {
+            // конечный автомат
+            switch(state) {
+                case 0:
+                    // начальное состояние
+                    if(input > prevInput) state = 1;
+                    else if(input < prevInput) state = 2;
+                    isUpdataExtremaUp = false;
+                    isUpdataExtremaDown = false;
+                break;
+                case 1:
+                    if(input < prevInput) {
+                        isUpdataExtremaUp = true;
+                        dataMax = prevInput;
+                        state = 2;
+                    } else {
+                        isUpdataExtremaUp = false;
+                        isUpdataExtremaDown = false;
+                    }
+                break;
+                case 2:
+                    if(input > prevInput) {
+                        isUpdataExtremaDown = true;
+                        dataMin = prevInput;
+                        state = 1;
+                    } else {
+                        isUpdataExtremaUp = false;
+                        isUpdataExtremaDown = false;
+                    }
+                break;
+            }
+
+            prevInput = input;
+        }
+    }
+
+
+    LastExtrema::LastExtrema() {
+        isInit = false;
+    }
+
+    LastExtrema::LastExtrema(int numExtrema) {
+        isInit = false;
+        LastExtrema::numExtrema = numExtrema;
+    }
+
+    void LastExtrema::updata(double input) {
+        if(isInit == false) {
+            prevInput = input;
+            isInit = true;
+            return;
+        } else {
+            // конечный автомат
+            switch(state) {
+                case 0:
+                    // начальное состояние
+                    if(input > prevInput) state = 1;
+                    else if(input < prevInput) state = 2;
+                    isUpdataExtremaUp = false;
+                    isUpdataExtremaDown = false;
+                break;
+                case 1:
+                    if(input < prevInput) {
+                        isUpdataExtremaUp = true;
+                        vExtremaUp.push_back(prevInput);
+                        vExtrema.push_back(prevInput);
+                        state = 2;
+                    } else {
+                        isUpdataExtremaUp = false;
+                        isUpdataExtremaDown = false;
+                    }
+                break;
+                case 2:
+                    if(input > prevInput) {
+                        isUpdataExtremaDown = true;
+                        vExtremaDown.push_back(prevInput);
+                        vExtrema.push_back(prevInput);
+                        state = 1;
+                    } else {
+                        isUpdataExtremaUp = false;
+                        isUpdataExtremaDown = false;
+                    }
+                break;
+            }
+
+            if((int)vExtremaUp.size() > numExtrema) {
+                vExtremaUp.erase(vExtremaUp.begin());
+            }
+            if((int)vExtremaDown.size() > numExtrema) {
+                vExtremaDown.erase(vExtremaDown.begin());
+            }
+            if((int)vExtrema.size() > numExtrema) {
+                vExtrema.erase(vExtrema.begin());
+            }
+
+            prevInput = input;
+        }
+    }
+
+    FilterExtrema::FilterExtrema() {
+
+    }
+
+    FilterExtrema::FilterExtrema(int numExtrema, double level) {
+        iLastExtrema = LastExtrema(numExtrema);
+    }
+
+    void FilterExtrema::updata(double input) {
+        iLastExtrema.updata(input);
+        if(iLastExtrema.vExtrema.size() == numExtrema) {
+
+        }
     }
 
 }

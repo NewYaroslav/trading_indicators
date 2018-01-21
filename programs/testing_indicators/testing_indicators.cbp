@@ -24,10 +24,14 @@
 					<Add option="-O2" />
 					<Add option="-std=c++11" />
 					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
 				</Linker>
 			</Target>
 		</Build>
@@ -35,8 +39,13 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../../../fann/src/floatfann.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../src/Drawing.cpp" />
 		<Unit filename="../../src/Drawing.hpp" />
+		<Unit filename="../../src/FannFunctions.cpp" />
+		<Unit filename="../../src/FannFunctions.hpp" />
 		<Unit filename="../../src/NormalizationData.cpp" />
 		<Unit filename="../../src/NormalizationData.hpp" />
 		<Unit filename="../../src/ReadingData.cpp" />

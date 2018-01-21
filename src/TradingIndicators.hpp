@@ -458,6 +458,23 @@ namespace Indicators {
         */
         std::vector<double> updata(double input);
         std::vector<double> data; ///< массив последних n элементов
+        int getPeriod() {return n;};
+    };
+
+    class SearchMinMax {
+        private:
+        bool isStart = false;
+        public:
+        Window iWindow;
+        SearchMinMax();
+        SearchMinMax(int period);
+        void updata(double input);
+        double minData;
+        double maxData;
+        double minPrevData;
+        double maxPrevData;
+        bool isNewMin = false;
+        bool isNewMax = false;
     };
 
     class BasicExtrema {
@@ -472,9 +489,53 @@ namespace Indicators {
         void updata(double input);
     };
 
+    /** @brief Детектор эксремумов
+        @version 1.0
+        @date 21.01.2018
+    */
     class ExtremaDetector {
+        private:
+        double prevInput = 0;
+        bool isInit = false;
+        int state = 0;
         public:
-        //ExtremaDetector
+        bool isUpdataExtremaUp = false;
+        bool isUpdataExtremaDown = false;
+        ExtremaDetector();
+        void updata(double input);
+        double dataMin = 0, dataMax = 0;
+    };
+
+    /** @brief Последние n эксремумов
+        @version 1.0
+        @date 21.01.2018
+    */
+    class LastExtrema {
+        private:
+        double prevInput = 0;
+        bool isInit = false;
+        int state = 0;
+        int numExtrema = 10;
+        public:
+        bool isUpdataExtremaUp = false;
+        bool isUpdataExtremaDown = false;
+        std::vector<double> vExtremaUp;
+        std::vector<double> vExtremaDown;
+        std::vector<double> vExtrema;
+        LastExtrema();
+        LastExtrema(int numExtrema);
+        void updata(double input);
+        int getNumExtrema() {return numExtrema;};
+    };
+
+    class FilterExtrema {
+        private:
+        LastExtrema iLastExtrema;
+        int numExtrema = 10;
+        public:
+        FilterExtrema();
+        FilterExtrema(int numExtrema, double level);
+        void updata(double input);
     };
 
 }

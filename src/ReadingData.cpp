@@ -217,7 +217,7 @@ int CurrencyQuote::openFile(std::string name) {
                     }
                 }
             }
-            if(close.size() % 1440 == 0) {
+            if(close.size() % 14400 == 0) {
                 std::cout << "number of bars: " << close.size() << "\r";
             }
 
