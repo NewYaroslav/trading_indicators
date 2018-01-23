@@ -194,6 +194,32 @@ namespace Indicators {
         double updata(double input);
     };
 
+    /** @brief Класс индекса относительной силы с использованием SMM вместо SMA
+        @version 1.0
+        @date 08.01.2018
+    */
+    class SRSI {
+        private:
+        SMM iU;
+        SMM iD;
+        int n;
+        double prevInput;
+        public:
+        bool isStart = false;
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 5)
+        */
+        SRSI();
+        /** @brief Инициализация индикатора с заданными периодом
+            @param[in] period период индикатора
+        */
+        SRSI(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+            @return значение индикатора
+        */
+        double updata(double input);
+    };
+
     /** @brief Линии Боллинджера
         @version 1.0
         @date 09.01.2018

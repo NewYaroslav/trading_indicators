@@ -128,7 +128,17 @@ namespace FannFunctions {
         BaseNet(std::string path);
         ~BaseNet();
         void update(std::vector<double>& in, std::vector<double>& out);
+        int update(std::vector<double>& in);
     };
+
+    /*
+     class Balance {
+        public:
+        std::vector<std::vector<double>> vInput;
+        Balance(int maxSample, int nInput, int nOutput);
+        void setData(std::vector<double>& input, std::vector<double>& output);
+     };
+     */
 
 }
 

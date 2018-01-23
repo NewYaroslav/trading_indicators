@@ -36,6 +36,16 @@
 
 namespace TrainingFunctions {
 
+    /** @brief ѕолучить массивы данных
+        @param[in] path вектор путей до файлов с данными
+        @param[in] data вектор данных
+        @param[in] start процент начала данных (от 0 до 1)
+        @param[in] stop процент конца данных (от 0 до 1)
+    */
+    void getData(std::vector<std::string>& path, std::vector<std::vector<double>>& data, double start, double stop);
+
+    void getExtremaDetectorTrainData(std::string name, std::vector<std::vector<double>>& data, int numTrainingSamples, int nWindow);
+
     /** @brief ѕолучить массивы минимумов и максимумов
         @param[in] close входные данные
         @param[out] dataMin вектор минимумов
@@ -50,6 +60,12 @@ namespace TrainingFunctions {
         @param[in] data данные дл€ обработки
     */
     void getWindowTrainData(std::string name, int numTrainingSamples, int nWindow, std::vector<double>& data);
+
+    void getNormBbRsiTrain(std::string name, int numTrainingSamples, int nMa, int nBb, double d, int nRsi, int nWindow, std::vector<double>& data);
+
+    void getGoodTimeEmaRsiTrainData(std::string name, int numTrainingSamples, std::vector<double>& data);
+
+    void getBbTrainData(std::string name, int numTrainingSamples, int nWindow, double d, std::vector<double>& data);
 
 }
 

@@ -185,6 +185,44 @@ namespace Indicators {
         return _rsi;
     }
 
+    SRSI::SRSI() {
+        n = 5;
+        iU = SMM(n);
+        iD = SMM(n);
+    }
+
+    SRSI::SRSI(int period) {
+        n = period;
+        iU = SMM(n);
+        iD = SMM(n);
+    }
+
+    double SRSI::updata(double input) {
+        if(isStart == false) {
+            prevInput = input;
+            isStart = true;
+            return 50.0;
+        }
+        double u = 0, d = 0;
+        if (prevInput < input) {
+            u = input - prevInput;
+            d = 0.0;
+        } else
+        if (prevInput > input) {
+            d = prevInput - input;
+            u = 0.0;
+        }
+        u = iU.updata(u);
+        d = iD.updata(d);
+        prevInput = input;
+        if (d == 0.0) {
+            return 100.0;
+        }
+        double rs = u / d;
+        double _rsi = 100.0 - (100.0 / (1.0 + rs));
+        return _rsi;
+    }
+
     BollingerBands::BollingerBands() {
         n = 20;
         d = 2.0;

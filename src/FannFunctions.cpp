@@ -74,4 +74,22 @@ namespace FannFunctions {
         }
     }
 
+    int BaseNet::update(std::vector<double>& in) {
+        if(in.size() != nInput) {
+            std::cout << "error: in.size() != nInput" << std::endl;
+            return -1;
+        }
+        conversion(in, input);
+        fann_type* calcOut = fann_run(ann, input);
+        fann_type minData = 2;
+        int pos = 0;
+        for(int i = 0; i < nOutput; i++) {
+            if(calcOut[i] < minData) {
+                minData = calcOut[i];
+                pos = i;
+            }
+        }
+        return pos;
+    }
+
 }

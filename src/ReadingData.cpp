@@ -48,6 +48,21 @@ CurrencyQuote::CurrencyQuote(std::string name) {
     close.reserve(60);
 }
 
+CurrencyQuote::CurrencyQuote(std::string name, eDataType type) {
+    dataType = type;
+    openFile(name);
+    year.reserve(60);
+    month.reserve(60);
+    day.reserve(60);
+    hour.reserve(60);
+    minutes.reserve(60);
+    seconds.reserve(60);
+    open.reserve(60);
+    high.reserve(60);
+    low.reserve(60);
+    close.reserve(60);
+}
+
 void CurrencyQuote::tickMinutes(int& year, int& month, int& day, int& hour, int& minutes) {
     const int daysMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     minutes++;
@@ -221,6 +236,82 @@ int CurrencyQuote::openFile(std::string name) {
                 std::cout << "number of bars: " << close.size() << "\r";
             }
 
+            // open
+            offset = found + 1;
+            found = buffer.find_first_of(";,", offset);
+            numberStr = buffer.substr(offset, found - offset);
+            double _open = atof(numberStr.c_str());
+
+            offset = found + 1;
+            found = buffer.find_first_of(";,", offset);
+            numberStr = buffer.substr(offset, found - offset);
+            double _high = atof(numberStr.c_str());
+            // low
+            offset = found + 1;
+            found = buffer.find_first_of(";,", offset);
+            numberStr = buffer.substr(offset, found - offset);
+            double _low = atof(numberStr.c_str());
+            // close
+            offset = found + 1;
+            found = buffer.find_first_of(";,", offset);
+            numberStr = buffer.substr(offset, found - offset);
+            double _close = atof(numberStr.c_str());
+
+
+            year.push_back(_year);
+            month.push_back(_month);
+            day.push_back(_day);
+            hour.push_back(_hour);
+            minutes.push_back(_minutes);
+            seconds.push_back(_seconds);
+
+            if(_high < _low) {
+                std::cout << "error! high < low" << std::endl;
+                std::cout << "high: " << _high << " low: " << _low <<  std::endl;
+                std::cout << (int)_year << "." << (int)_month << "." << (int)_day << std::endl;
+                std::cout << (int)_hour << ":" << (int)_minutes << ":" << (int)_seconds << std::endl;
+            }
+
+            open.push_back(_open);
+            high.push_back(_high);
+            low.push_back(_low);
+            close.push_back(_close);
+            //if(close.size() > 100) break;
+        }
+        break;
+        case DTYYYYMMDD_TIME_OPEN_HIGH_LOW_CLOSE_VOL:
+        while(!fin.eof()) {
+            std::getline(fin, buffer);
+
+            // находим дату и время
+            offset = 0;
+            found = buffer.find_first_of(";,", offset);
+            if (found == std::string::npos) {
+                break;
+            }
+            std::string strData = buffer.substr(offset, found - offset);
+            numberStr = strData.substr(0, 4);
+            short _year = atoi(numberStr.c_str());
+            numberStr = strData.substr(4, 2);
+            char _month = atoi(numberStr.c_str());
+            numberStr = strData.substr(6, 2);
+            char _day = atoi(numberStr.c_str());
+
+            //std::cout << (int)_year << "." << (int)_month << "." << (int)_day << std::endl;
+
+            offset = found + 1;
+            found = buffer.find_first_of(";,", offset);
+            std::string strData2 = buffer.substr(offset, found - offset);
+            //std::cout << "strData2: " << strData2 << std::endl;
+
+            numberStr = strData2.substr(0, 2);
+            char _hour = atoi(numberStr.c_str());
+            numberStr = strData2.substr(2, 2);
+            char _minutes = atoi(numberStr.c_str());
+            numberStr = strData2.substr(4, 2);
+            char _seconds = atoi(numberStr.c_str());
+
+            //std::cout << (int)_hour << ":" << (int)_minutes << ":" << (int)_seconds << std::endl;
             // open
             offset = found + 1;
             found = buffer.find_first_of(";,", offset);

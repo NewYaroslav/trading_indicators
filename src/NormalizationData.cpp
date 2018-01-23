@@ -21,3 +21,29 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
+#include "NormalizationData.hpp"
+
+namespace Normalization {
+    BollingerBandsNorm::BollingerBandsNorm() {isInit = false;};
+
+    BollingerBandsNorm::BollingerBandsNorm(int n, double d) {
+        iBands = Indicators::BollingerBands(n, d);
+        isInit = true;
+    }
+
+    double BollingerBandsNorm::updata(double input) {
+        if(isInit == true) {
+            iBands.updata(input);
+            if(input > iBands.tl) return 1.0;
+            else if(input < iBands.bl) return -1.0;
+            if(input > iBands.ml) {
+                return (input - iBands.ml) / (iBands.tl - iBands.ml);
+            } else
+            if(input < iBands.ml) {
+                return -((iBands.ml - input) / (iBands.ml - iBands.bl));
+            }
+        }
+        return 0.0;
+    }
+}

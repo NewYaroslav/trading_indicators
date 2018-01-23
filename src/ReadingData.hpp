@@ -60,6 +60,7 @@ class CurrencyQuote {
     //std::vector<int> vol;
 
     CurrencyQuote(std::string name);
+    CurrencyQuote(std::string name, eDataType type);
     int openFile(std::string name);
 };
 

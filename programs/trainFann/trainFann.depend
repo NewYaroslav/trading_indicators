@@ -1,0 +1,118 @@
+# depslib dependency file v1.0
+1513643516 source:d:\yar\_repoz\fann\src\floatfann.c
+	"config.h"
+	"floatfann.h"
+	"fann.c"
+	"fann_io.c"
+	"fann_train.c"
+	"fann_train_data.c"
+	"fann_error.c"
+	"fann_cascade.c"
+	"parallel_fann.c"
+
+1513643516 d:\yar\_repoz\fann\src\include\config.h
+
+1513643516 d:\yar\_repoz\fann\src\include\floatfann.h
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann.h
+	"fixedfann.h"
+	"floatfann.h"
+	<sys/time.h>
+	<windows.h>
+	"fann_error.h"
+	"fann_activation.h"
+	"fann_data.h"
+	"fann_internal.h"
+	"fann_train.h"
+	"fann_cascade.h"
+	"fann_io.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fixedfann.h
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_error.h
+	<stdio.h>
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_activation.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_data.h
+	<stdio.h>
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_internal.h
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	"fann_data.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_train.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_cascade.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_io.h
+
+1513643516 d:\yar\_repoz\fann\src\fann.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<time.h>
+	<math.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_io.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	"config.h"
+	"fann.h"
+	"fann_data.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_train.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<math.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_train_data.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_error.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<limits.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_cascade.c
+	"config.h"
+	"fann.h"
+	"string.h"
+
+1513643516 d:\yar\_repoz\fann\src\parallel_fann.c
+	<omp.h>
+	"parallel_fann.h"
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\parallel_fann.h
+	"fann.h"
+
+1516128800 source:d:\yar\_repoz\trading_indicators\programs\trainfann\main.cpp
+	<iostream>
+	"fann.h"
+	"floatfann.h"
+	"stdio.h"
+

@@ -33,6 +33,7 @@
 
 #include <vector>
 #include <algorithm>
+#include "TradingIndicators.hpp"
 
 namespace Normalization {
     /** @brief MinMax нормализация данных
@@ -174,6 +175,15 @@ namespace Normalization {
             else if(input[k] < -1) input[k] = -1.0;
         }
     }
+
+    class BollingerBandsNorm {
+        public:
+        bool isInit = false;
+        Indicators::BollingerBands iBands;
+        BollingerBandsNorm();
+        BollingerBandsNorm(int n, double d);
+        double updata(double input);
+    };
 
 }
 
