@@ -68,14 +68,48 @@ int main()
 
     const unsigned int hidden_layers = _hidden_layers;
 
-    const unsigned int num_layers = 2 + hidden_layers;
+    unsigned int num_layers = 2 + hidden_layers;
+    if(num_layers < 3) num_layers = 3;
+    if(num_layers > 5) num_layers = 5;
 
     unsigned int num_neurons_hidden = fann_num_input_train_data(trainFannData);
     cout << "¬ведите число нейронов cкрытых слоев" << endl;
     cin >> num_neurons_hidden;
 
+    cout << "¬ведите тип нейросети (0 - соединени€ от сло€ к слою, 1 - каждый слой соединен с неронами всех предыдущих слоев)" << endl;
+    int netType = 0;
+    cin >> netType;
     // создание нейронной сети с именем ann
-    struct fann *ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_output);
+    struct fann *ann = NULL;
+    if(netType == 0) {
+        if(num_layers == 3) {
+            ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_output);
+            //ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_output);
+        } else
+        if(num_layers == 4) {
+            ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_output);
+            //ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_output);
+        } else
+        if(num_layers == 5) {
+            ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_neurons_hidden, num_output);
+            //ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_neurons_hidden, num_output);
+        }
+    } else
+    if(netType == 1) {
+        if(num_layers == 3) {
+            //ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_output);
+            ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_output);
+        } else
+        if(num_layers == 4) {
+            //ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_output);
+            ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_output);
+        } else
+        if(num_layers == 5) {
+            //ann = fann_create_standard(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_neurons_hidden, num_output);
+            ann = fann_create_shortcut(num_layers, num_input, num_neurons_hidden, num_neurons_hidden, num_neurons_hidden, num_output);
+        }
+    }
+
 
     fann_set_activation_function_hidden(ann, FANN_SIGMOID_SYMMETRIC);
     fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);

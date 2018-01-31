@@ -119,6 +119,7 @@ namespace FannFunctions {
 
     class BaseNet {
         public:
+        bool isInit = false;
         std::string path;
         struct fann* ann = NULL;
         fann_type* input = NULL;
@@ -127,8 +128,8 @@ namespace FannFunctions {
         BaseNet();
         BaseNet(std::string path);
         ~BaseNet();
-        void update(std::vector<double>& in, std::vector<double>& out);
-        int update(std::vector<double>& in);
+        void updata(std::vector<double>& in, std::vector<double>& out);
+        int updata(std::vector<double>& in);
     };
 
     /*

@@ -98,7 +98,7 @@ namespace Drawing {
     void getCandleGraph(cv::Mat& out,
                         int width, int height,
                         std::vector<CandlesType>& in,
-                        cv::Scalar backgroundColor, cv::Scalar backgroundColor2, cv::Scalar lineColor);
+                        cv::Scalar backgroundColor, cv::Scalar backgroundColor2, std::vector<cv::Scalar>& lineColor);
 
     void viewCandleGraph(std::string name, std::vector<CandlesType>& in, int flag);
 

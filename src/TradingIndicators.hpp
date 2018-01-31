@@ -532,16 +532,43 @@ namespace Indicators {
         double dataMin = 0, dataMax = 0;
     };
 
+    /** @brief Фильтр низкой частоты
+        @version 1.0
+        @date 30.01.2018
+    */
+     class LowPassFilter {
+        private:
+        double alfa;
+        double beta;
+        double prevY;
+        char isStart = 0;
+        public:
+        double tranTime;
+        LowPassFilter();
+        LowPassFilter(double tranTime, double period, double errorSignal);
+        LowPassFilter(double n, double errorSignal);
+        LowPassFilter(double n);
+        double updata(double in);
+        char isInit(void) {return isStart;};
+    };
+
     /** @brief Последние n эксремумов
         @version 1.0
         @date 21.01.2018
     */
     class LastExtrema {
         private:
-        double prevInput = 0;
         bool isInit = false;
         int state = 0;
         int numExtrema = 10;
+        int tick = 0;
+        //int period = 10;
+        Window iWindow;
+        SMA iSmaMin;
+        SMA iSmaMax;
+        SearchMinMax iSearchMinMax;
+        double smaMin, smaMax, prevSmaMin, prevSmaMax;
+        int stateMin = 0, stateMax = 0;
         public:
         bool isUpdataExtremaUp = false;
         bool isUpdataExtremaDown = false;
@@ -549,20 +576,31 @@ namespace Indicators {
         std::vector<double> vExtremaDown;
         std::vector<double> vExtrema;
         LastExtrema();
-        LastExtrema(int numExtrema);
+        LastExtrema(int numExtrema, int period);
         void updata(double input);
         int getNumExtrema() {return numExtrema;};
+        int getTick() {return tick;};
     };
 
-    class FilterExtrema {
+    /** @brief Психологически важные уровни
+        @version 1.0
+        @date 30.01.2018
+    */
+    class PsychologicalLevel {
         private:
-        LastExtrema iLastExtrema;
-        int numExtrema = 10;
+        Window iWindow;
+        SMA iSMA;
+        int factor;
+        bool isFactor = false;
         public:
-        FilterExtrema();
-        FilterExtrema(int numExtrema, double level);
+        PsychologicalLevel();
+        PsychologicalLevel(int nLevel);
+        PsychologicalLevel(int nLevel, int nWindow);
         void updata(double input);
+        std::vector<double> vLevel;
     };
+
+    void getMinMaxBands(std::vector<double>& input, std::vector<double>& vMin, std::vector<double>& vMax, int period, int offset);
 
 }
 

@@ -1,0 +1,56 @@
+# depslib dependency file v1.0
+1516768166 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
+	"Drawing.hpp"
+
+1516767823 d:\yar\_repoz\trading_indicators\src\drawing.hpp
+	<vector>
+	<string>
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/core.hpp"
+	"opencv2/opencv.hpp"
+
+1516597287 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+	"ReadingData.hpp"
+	<string.h>
+	<stdlib.h>
+	<dirent.h>
+	<vector>
+	<string>
+	"stdio.h"
+	<fstream>
+	<iostream>
+
+1516597018 d:\yar\_repoz\trading_indicators\src\readingdata.hpp
+	<vector>
+	<string>
+
+1517420412 source:d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.cpp
+	"StrategyEffectiveness.hpp"
+	<cmath>
+
+1517419972 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
+	<vector>
+
+1517418478 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+	"TradingIndicators.hpp"
+	"NormalizationData.hpp"
+	<iostream>
+	"Drawing.hpp"
+
+1517417615 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+	<vector>
+	<numeric>
+	<algorithm>
+
+1517288126 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
+	<vector>
+	<algorithm>
+	"TradingIndicators.hpp"
+
+1517421186 source:d:\yar\_repoz\trading_indicators\programs\testwinrate\main.cpp
+	<iostream>
+	"ReadingData.hpp"
+	"TradingIndicators.hpp"
+	"StrategyEffectiveness.hpp"
+

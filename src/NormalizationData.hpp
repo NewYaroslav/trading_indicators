@@ -176,6 +176,38 @@ namespace Normalization {
         }
     }
 
+    /** @brief Получить число десятичных знаков после запятой
+        @param[in] input входные данные
+        @param[in] isFactor флаг. При установке данного флага функция возвращает множитель
+        @return количество знаков после запятой или множитель
+    */
+    template<class dataType>
+    int getNumberDecimals(std::vector<dataType>& input, bool isFactor = true) {
+        int factor, num = 1;
+        for(int n = 10; n < 1000000; n *= 10, num++) {
+            bool isFound = true;
+            factor = n;
+            for(int i = 0; i < (int)input.size(); i++) {
+                int temp = input[i] * n;
+                dataType dTemp = temp / (dataType) n;
+                if(dTemp != input[i]) {
+                    isFound = false;
+                    break;
+                }
+
+            }
+            if(isFound == true) {
+                break;
+            }
+        }
+        if(isFactor == true) return factor;
+        else return num;
+    }
+
+    /** @brief Класс для нормализации сигнала в пределах полос Боллинджера
+        @version 1.0
+        @date 30.01.2018
+    */
     class BollingerBandsNorm {
         public:
         bool isInit = false;

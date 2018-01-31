@@ -90,7 +90,7 @@ namespace Drawing {
         data[data.size() - 1].updataIndicator(dataInd, pos);
     }
 
-    void getCandleGraph(cv::Mat& out, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, cv::Scalar backgroundColor2, cv::Scalar lineColor) {
+    void getCandleGraph(cv::Mat& out, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, cv::Scalar backgroundColor2, std::vector<cv::Scalar>& lineColor) {
         const double windowSize = 0.8;
         // создадим картинку
         cv::Mat output(cv::Size(width, height), CV_8UC3);
@@ -163,9 +163,11 @@ namespace Drawing {
                     for(int k = 0; k < (int)in[i].indicator.size(); k++) {
                         double indic = heightDiv2 - ((in[i].indicator[k] - aver) * sacle);
                         double indic2 = heightDiv2 - ((in[i + 1].indicator[k] - aver) * sacle);
-                        //int rgbNum = (0xF0F0F0 * (k + 1)) / in[i].indicator.size();
-                        //int R = (rgbNum >> 16) & 0xFF; int G = (rgbNum >> 8) & 0xFF; int B = rgbNum & 0xFF;
-                        cv::line(output, cv::Point(offset, indic), cv::Point(offset + step, indic2), cv::Scalar(255,0,0));
+                        if(k < lineColor.size()) {
+                            cv::line(output, cv::Point(offset, indic), cv::Point(offset + step, indic2), lineColor[k]);
+                        } else {
+                            cv::line(output, cv::Point(offset, indic), cv::Point(offset + step, indic2), cv::Scalar(255,0,0));
+                        }
                     }
                 }
             }
@@ -176,7 +178,16 @@ namespace Drawing {
 
     void viewCandleGraph(std::string name, std::vector<CandlesType>& in, int flag = 1) {
         cv::Mat output;
-        getCandleGraph(output, 800, 200, in, cv::Scalar(0,0,0),  cv::Scalar(25,0,0),  cv::Scalar(255,0,0));
+        std::vector<cv::Scalar> vLineColoer(10);
+        vLineColoer[0] = cv::Scalar(255,0,0); vLineColoer[1] = cv::Scalar(255,150,0);
+        vLineColoer[2] = cv::Scalar(150,255,0); vLineColoer[3] = cv::Scalar(0,255,0);
+        vLineColoer[4] = cv::Scalar(0,255,150); vLineColoer[5] = cv::Scalar(0,150,255);
+        vLineColoer[6] = cv::Scalar(0,0,255); vLineColoer[7] = cv::Scalar(50,50,255);
+        vLineColoer[8] = cv::Scalar(150,150,255); vLineColoer[9] = cv::Scalar(255,255,255);
+        getCandleGraph(output, 1000, 400, in, cv::Scalar(0,0,0),  cv::Scalar(25,0,0),  vLineColoer);
+        for(int i = 0; i < 10; i++) {
+            cv::putText(output, std::to_string(i + 1), cv::Point(10 + i * 8 , 10), CV_FONT_HERSHEY_PLAIN, 1.0, vLineColoer[i], 1, 8, 0);
+        }
         cv::imshow(name, output);
         output.release();
         if (flag == 0) {
@@ -192,7 +203,16 @@ namespace Drawing {
 
     void saveCandleGraph(std::string name, std::vector<CandlesType>& in) {
         cv::Mat output;
-        getCandleGraph(output, 1000, 400, in, cv::Scalar(0,0,0),  cv::Scalar(25,0,0),  cv::Scalar(255,0,0));
+        std::vector<cv::Scalar> vLineColoer(10);
+        vLineColoer[0] = cv::Scalar(255,0,0); vLineColoer[1] = cv::Scalar(255,150,0);
+        vLineColoer[2] = cv::Scalar(150,255,0); vLineColoer[3] = cv::Scalar(0,255,0);
+        vLineColoer[4] = cv::Scalar(0,255,150); vLineColoer[5] = cv::Scalar(0,150,255);
+        vLineColoer[6] = cv::Scalar(0,0,255); vLineColoer[7] = cv::Scalar(50,50,255);
+        vLineColoer[8] = cv::Scalar(150,150,255); vLineColoer[9] = cv::Scalar(255,255,255);
+        getCandleGraph(output, 1000, 400, in, cv::Scalar(0,0,0),  cv::Scalar(25,0,0),  vLineColoer);
+        for(int i = 0; i < 10; i++) {
+            cv::putText(output, std::to_string(i + 1), cv::Point(10 + i * 8 , 10), CV_FONT_HERSHEY_PLAIN, 1.0, vLineColoer[i], 1, 8, 0);
+        }
         std::string imageName = name + ".jpg";
         cv::imwrite(imageName, output);
         output.release();

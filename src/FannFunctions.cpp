@@ -43,7 +43,7 @@ namespace FannFunctions {
         delete[] data;
     }
 
-    BaseNet::BaseNet() {};
+    BaseNet::BaseNet() {isInit = false;};
 
     BaseNet::BaseNet(std::string path) {
         BaseNet::path = path;
@@ -52,16 +52,23 @@ namespace FannFunctions {
         nOutput = fann_get_num_output(ann);
         input = (fann_type*)malloc(nInput * sizeof(fann_type));
         std::cout << "BaseNet, num input: " << nInput << " num output: " << nOutput << std::endl;
+        isInit = true;
     }
 
     BaseNet::~BaseNet() {
-        fann_destroy(ann);
-        free(input);
+        if(isInit) {
+            fann_destroy(ann);
+            free(input);
+        }
         std::cout << "~BaseNet" << std::endl;
     };
 
-    void BaseNet::update(std::vector<double>& in, std::vector<double>& out) {
-        if(in.size() != nInput) {
+    void BaseNet::updata(std::vector<double>& in, std::vector<double>& out) {
+        if(isInit == false) {
+            std::cout << "error: neural network not initialized" << std::endl;
+            return;
+        }
+        if((int)in.size() != nInput) {
             std::cout << "error: in.size() != nInput" << std::endl;
             return;
         }
@@ -74,21 +81,28 @@ namespace FannFunctions {
         }
     }
 
-    int BaseNet::update(std::vector<double>& in) {
-        if(in.size() != nInput) {
+    int BaseNet::updata(std::vector<double>& in) {
+        if(isInit == false) {
+            std::cout << "error: neural network not initialized" << std::endl;
+            return -1;
+        }
+        if((int)in.size() != nInput) {
             std::cout << "error: in.size() != nInput" << std::endl;
             return -1;
         }
         conversion(in, input);
         fann_type* calcOut = fann_run(ann, input);
-        fann_type minData = 2;
-        int pos = 0;
+        fann_type maxData = -2;
+        int pos = -1;
+        //printf("out: ");
         for(int i = 0; i < nOutput; i++) {
-            if(calcOut[i] < minData) {
-                minData = calcOut[i];
+            //printf("%f ", calcOut[i]);
+            if(calcOut[i] > maxData) {
+                maxData = calcOut[i];
                 pos = i;
             }
         }
+        //printf("\n");
         return pos;
     }
 

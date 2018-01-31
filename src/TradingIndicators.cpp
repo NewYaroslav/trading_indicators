@@ -23,6 +23,7 @@
 */
 
 #include "TradingIndicators.hpp"
+#include "NormalizationData.hpp"
 #include <iostream>
 #include "Drawing.hpp"
 
@@ -903,50 +904,73 @@ namespace Indicators {
         isInit = false;
     }
 
-    LastExtrema::LastExtrema(int numExtrema) {
+    LastExtrema::LastExtrema(int numExtrema, int period) {
         isInit = false;
         LastExtrema::numExtrema = numExtrema;
+        iWindow = Window(period);
+        iSmaMin = SMA(period);
+        iSmaMax = SMA(period);
+        SearchMinMax iSearchMinMax(period);
     }
 
     void LastExtrema::updata(double input) {
         if(isInit == false) {
-            prevInput = input;
             isInit = true;
+            iSearchMinMax.updata(input);
+            smaMin = iSmaMin.updata(iSearchMinMax.minData);
+            smaMax = iSmaMax.updata(iSearchMinMax.maxData);
+            prevSmaMin = smaMin;
+            prevSmaMax = smaMax;
             return;
         } else {
-            // конечный автомат
-            switch(state) {
+            double a = prevSmaMin;
+            double d = prevSmaMax;
+            prevSmaMin = smaMin;
+            prevSmaMax = smaMax;
+            double& b = prevSmaMin;
+            double& e = prevSmaMax;
+            iSearchMinMax.updata(input);
+            smaMin = iSmaMin.updata(iSearchMinMax.minData);
+            smaMax = iSmaMax.updata(iSearchMinMax.maxData);
+            double& c = smaMin;
+            double& f = smaMax;
+
+            state = 0;
+            switch(stateMin) {
                 case 0:
-                    // начальное состояние
-                    if(input > prevInput) state = 1;
-                    else if(input < prevInput) state = 2;
-                    isUpdataExtremaUp = false;
-                    isUpdataExtremaDown = false;
+                    if(b < a && b < c) state = 2;
+                    else if(b < a) stateMin = 1;
                 break;
                 case 1:
-                    if(input < prevInput) {
-                        isUpdataExtremaUp = true;
-                        vExtremaUp.push_back(prevInput);
-                        vExtrema.push_back(prevInput);
-                        state = 2;
-                    } else {
-                        isUpdataExtremaUp = false;
-                        isUpdataExtremaDown = false;
-                    }
+                    if(b < c) {stateMin = 0; state = 2;}
                 break;
-                case 2:
-                    if(input > prevInput) {
-                        isUpdataExtremaDown = true;
-                        vExtremaDown.push_back(prevInput);
-                        vExtrema.push_back(prevInput);
-                        state = 1;
-                    } else {
-                        isUpdataExtremaUp = false;
-                        isUpdataExtremaDown = false;
-                    }
+            }
+            switch(stateMax) {
+                case 0:
+                    if(e > d && e > f) state = 1;
+                    else if(e > d) stateMax = 1;
+                break;
+                case 1:
+                    if(e > f) {stateMax = 0; state = 1;}
                 break;
             }
 
+            // конечный автомат
+            isUpdataExtremaUp = false;
+            isUpdataExtremaDown = false;
+
+            switch(state) {
+                case 1:
+                    isUpdataExtremaUp = true;
+                    vExtremaUp.push_back(prevSmaMax);
+                    vExtrema.push_back(prevSmaMax);
+                break;
+                case 2:
+                    isUpdataExtremaDown = true;
+                    vExtremaDown.push_back(prevSmaMin);
+                    vExtrema.push_back(prevSmaMin);
+                break;
+            }
             if((int)vExtremaUp.size() > numExtrema) {
                 vExtremaUp.erase(vExtremaUp.begin());
             }
@@ -956,23 +980,107 @@ namespace Indicators {
             if((int)vExtrema.size() > numExtrema) {
                 vExtrema.erase(vExtrema.begin());
             }
-
-            prevInput = input;
         }
     }
 
-    FilterExtrema::FilterExtrema() {
+    LowPassFilter::LowPassFilter() {};
 
+    LowPassFilter::LowPassFilter(double tranTime, double period, double errorSignal) {
+        double N = tranTime / period;
+        double Ntay = std::log(1.0/errorSignal);
+        alfa = std::exp(-Ntay/N);
+        beta = 1.0 - alfa;
+        LowPassFilter::tranTime = tranTime;
     }
 
-    FilterExtrema::FilterExtrema(int numExtrema, double level) {
-        iLastExtrema = LastExtrema(numExtrema);
+    LowPassFilter::LowPassFilter(double n, double errorSignal) {
+        double Ntay = std::log(1.0/errorSignal);
+        alfa = std::exp(-Ntay/n);
+        beta = 1.0 - alfa;
+        LowPassFilter::tranTime = n;
     }
 
-    void FilterExtrema::updata(double input) {
-        iLastExtrema.updata(input);
-        if(iLastExtrema.vExtrema.size() == numExtrema) {
+    LowPassFilter::LowPassFilter(double n) {
+        double Ntay = std::log(1.0/0.01);
+        alfa = std::exp(-Ntay/n);
+        beta = 1.0 - alfa;
+        LowPassFilter::tranTime = n;
+    }
 
+    double LowPassFilter::updata(double in) {
+        if (isStart == 0) {
+            prevY = in;
+            isStart = 1;
+        }
+        double y = alfa*prevY + beta*in;
+        prevY = y;
+        return y;
+    }
+
+    PsychologicalLevel::PsychologicalLevel() {
+        iWindow = Window(30);
+        vLevel.resize(10);
+        iSMA = SMA(60);
+    };
+
+    PsychologicalLevel::PsychologicalLevel(int nLevel) {
+        iWindow = Window(30);
+        vLevel.resize(nLevel);
+        iSMA = SMA(60);
+    }
+
+    PsychologicalLevel::PsychologicalLevel(int nLevel, int nWindow) {
+        iWindow = Window(nWindow);
+        vLevel.resize(nLevel);
+        iSMA = SMA(60);
+    }
+
+    void PsychologicalLevel::updata(double input) {
+        if(isFactor == false) iWindow.updata(input);
+        double smaData = iSMA.updata(input);
+        if((int)iWindow.data.size() == iWindow.getPeriod()) {
+            double minData = *std::min_element(iWindow.data.begin(), iWindow.data.end());
+            double maxData = *std::max_element(iWindow.data.begin(), iWindow.data.end());
+
+            if(isFactor == false) {
+                factor = Normalization::getNumberDecimals(iWindow.data, true);
+                isFactor = true;
+            }
+
+            //std::cout << "factor: " << factor << std::endl;
+            //std::cout << "input: " << input << std::endl;
+            double nearestLevel = ((double)((int)((double)factor * smaData) / 50) * 50.0) / (double)factor;
+            //std::cout << "nearest level: " << nearestLevel << std::endl;
+
+            if(vLevel.size() % 2 == 0) {
+                vLevel[(int)vLevel.size()/2] = nearestLevel;
+                for(int i = (int)vLevel.size()/2 + 1; i < (int)vLevel.size(); i++) {
+                    vLevel[i] = vLevel[i - 1] + 50.0/(double)factor;
+                }
+                for(int i = (int)vLevel.size()/2 - 1; i >= 0; i--) {
+                    vLevel[i] = vLevel[i + 1] - 50.0/(double)factor;
+                }
+            }
+
+        } else {
+            std::fill(vLevel.begin(), vLevel.end(), input);
+        }
+    }
+
+    void getMinMaxBands(std::vector<double>& input, std::vector<double>& vMin, std::vector<double>& vMax, int period, int offset) {
+        Indicators::SMA iSmaMin(period);
+        Indicators::SMA iSmaMax(period);
+        Indicators::SearchMinMax iSearchMinMax(period);
+        vMin.resize(input.size());
+        vMax.resize(input.size());
+        for(int i = 0; i < (int)input.size(); i++) {
+            iSearchMinMax.updata(input[i]);
+            vMin[i] = iSmaMin.updata(iSearchMinMax.minData);
+            vMax[i] = iSmaMax.updata(iSearchMinMax.maxData);
+        }
+        for(int i = 0; i < (int)input.size() - offset; i++) {
+            vMin[i] = vMin[i + offset - 1];
+            vMax[i] = vMax[i + offset - 1];
         }
     }
 

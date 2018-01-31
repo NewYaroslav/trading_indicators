@@ -110,8 +110,9 @@
 1513643516 d:\yar\_repoz\fann\src\include\parallel_fann.h
 	"fann.h"
 
-1516128800 source:d:\yar\_repoz\trading_indicators\programs\trainfann\main.cpp
+1516745588 source:d:\yar\_repoz\trading_indicators\programs\trainfann\main.cpp
 	<iostream>
+	<fstream>
 	"fann.h"
 	"floatfann.h"
 	"stdio.h"

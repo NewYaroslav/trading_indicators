@@ -52,14 +52,17 @@ namespace TrainingFunctions {
 
     void getExtremaDetectorTrainData(std::string name, std::vector<std::vector<double>>& vRaw, int numTrainingSamples, int nWindow) {
         int posSamples = 0;
+        int nOutput = 2;
 
         fann_type** inputTrain = FannFunctions::reserveData(numTrainingSamples, nWindow);
-        fann_type** outputTrain = FannFunctions::reserveData(numTrainingSamples, 3);
+        fann_type** outputTrain = FannFunctions::reserveData(numTrainingSamples, nOutput);
+
+        int nUp = 0, nNeutral = 0;
 
         for(int n = 0; n < vRaw.size(); n++) {
             cout << "num raw data: " << n << endl;
-            Indicators::LastExtrema iExtrema(nWindow - 1);
-            Indicators::LastExtrema iExtrema2(nWindow - 1);
+            Indicators::LastExtrema iExtrema(nWindow - 1, 10);
+            Indicators::LastExtrema iExtrema2(nWindow - 1, 10);
             std::vector<double> vPik(vRaw[n].size());
             vPik[0] = 0.0;
             for(int i = 1; i < (int)vRaw[n].size(); i++) {
@@ -81,32 +84,40 @@ namespace TrainingFunctions {
 
                 if((int)iExtrema2.vExtrema.size() == nWindow - 1) {
                     std::vector<double> vInput = iExtrema2.vExtrema;
-                    std::vector<double> vOutput(3);
+                    std::vector<double> vOutput(nOutput);
                     vInput.push_back(close);
 
                     Normalization::calcMinMax(vInput, vInput, 0);
 
+                    int isUp = 0, isNeutral = 0;
                     if(vPik[i] == 1) {
-                        vOutput[0] = 1.0; vOutput[1] = 0.0; vOutput[2] = 0.0;
+                        vOutput[0] = 1.0; vOutput[1] = 0.0; //vOutput[2] = 0.0;
+                        isUp = 1;
                     } else
                     if(vPik[i] == -1) {
-                        vOutput[0] = 0.0; vOutput[1] = 0.0; vOutput[2] = 1.0;
+                        vOutput[0] = 0.0; vOutput[1] = 1.0; //vOutput[2] = 1.0;
+                        isNeutral = 1;
                     } else {
-                        vOutput[0] = 0.0; vOutput[1] = 1.0; vOutput[2] = 0.0;
+                        vOutput[0] = 0.0; vOutput[1] = 1.0; //vOutput[2] = 0.0;
+                        isNeutral = 1;
                     }
 
-                    FannFunctions::setData(vInput, vOutput, inputTrain, outputTrain, posSamples);
-
-                    posSamples++;
-                    if(posSamples >= numTrainingSamples) break;
-                    if(posSamples % 1440 == 0) {
-                        cout << "[" << posSamples << ":" << numTrainingSamples << "]\r";
+                    if((nUp >= nNeutral && isNeutral == 1) || (nUp <= nNeutral && isUp == 1)) {
+                        FannFunctions::setData(vInput, vOutput, inputTrain, outputTrain, posSamples);
+                        nUp += isUp; nNeutral += isNeutral;
+                        posSamples++;
+                        if(posSamples >= numTrainingSamples) break;
+                        if(posSamples % 1440 == 0) {
+                            cout << "[" << posSamples << ":" << numTrainingSamples << "]\r";
+                        }
                     }
                 }
             }
 
             if(posSamples >= numTrainingSamples) break;
         } // for
+        cout << endl;
+        cout << "nUp: " << nUp << " nNeutral: " << nNeutral << " all: " << nNeutral + nUp << endl;
 
         if(posSamples < numTrainingSamples) {
             cout << endl;
@@ -120,7 +131,7 @@ namespace TrainingFunctions {
         cout << endl;
         struct fann_train_data* trainFannData;
         cout << "create_train..." << endl;
-        trainFannData = fann_create_train_pointer_array(numTrainingSamples, nWindow, inputTrain, 1, outputTrain);
+        trainFannData = fann_create_train_pointer_array(numTrainingSamples, nWindow, inputTrain, nOutput, outputTrain);
         cout << "shuffle..." << endl;
         fann_shuffle_train_data(trainFannData);
         cout << "save: " << name << endl;
