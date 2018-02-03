@@ -95,15 +95,44 @@ namespace Drawing {
         std::vector<CandlesType> getCandlesType();
     };
 
+    /** @brief Получить график свечей
+        @param[in] out изображение
+        @param[in] width ширина изображения
+        @param[in] height высота изображения
+        @param[in] in массив с данными свечей
+        @param[in] backgroundColor цвет фона
+        @param[in] backgroundColor2 цвет фона
+        @param[in] lineColor цвет линий индикаторов
+    */
     void getCandleGraph(cv::Mat& out,
                         int width, int height,
                         std::vector<CandlesType>& in,
                         cv::Scalar backgroundColor, cv::Scalar backgroundColor2, std::vector<cv::Scalar>& lineColor);
 
+    /** @brief Показать график свечей
+        @param[in] name имя окна изображения
+        @param[in] in массив с данными свечей
+        @param[in] flag флаг включения задержки кадров (для пропуска кадра надо нажать английскую P)
+    */
     void viewCandleGraph(std::string name, std::vector<CandlesType>& in, int flag);
 
+    /** @brief Сохранить график свечей
+        @param[in] name имя окна изображения
+        @param[in] in массив с данными свечей
+    */
     void saveCandleGraph(std::string name, std::vector<CandlesType>& in);
 
+    /** @brief Показать график
+        @param[in] name имя окна изображения
+        @param[in] text текс на изображении
+        @param[in] in1 массив с данными
+        @param[in] in2 массив с данными
+        @param[in] in3 массив с данными
+        @param[in] in4 массив с данными
+        @param[in] width ширина изображения
+        @param[in] height высота изображения
+        @param[in] mask флаг, который если равен 0x10 включет сохранение картинки в папке img с именем name.jpg
+    */
     char drawOscilloscope4xBeam(
     std::string name, std::string text,
     std::vector<double> in1, std::vector<double> in2, std::vector<double> in3, std::vector<double> in4,

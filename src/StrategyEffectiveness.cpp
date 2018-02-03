@@ -1,3 +1,27 @@
+/*
+* trading_indicators - Indicators for technical analysis.
+*
+* Copyright (c) 2018 Yaroslav Barabanov. Email: elektroyar@yandex.ru
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
 #include "StrategyEffectiveness.hpp"
 #include <cmath>
 
@@ -13,11 +37,18 @@ StrategyEffectiveness::StrategyEffectiveness() {
         hwin[i] = 0;
         hloss[i] = 0;
     }
+    for(int i = 0; i < 1440; i++) {
+        mwin[i] = 0;
+        mloss[i] = 0;
+    }
 };
 
 
 void StrategyEffectiveness::setWin() {
     win++;
+    if(lossState > maxLoss) {
+        maxLoss = lossState; lossState = 0;
+    }
     money += profit*rate*money;
     grossprofit += profit*rate*money;
     vMoney.push_back(money);
@@ -26,6 +57,7 @@ void StrategyEffectiveness::setWin() {
 
 void StrategyEffectiveness::setLoss() {
     loss++;
+    lossState++;
     money -= rate*money;
     grossloss += rate*money;
     vMoney.push_back(money);
@@ -34,6 +66,9 @@ void StrategyEffectiveness::setLoss() {
 void StrategyEffectiveness::setWin(int hour) {
     hwin[hour]++;
     win++;
+    if(lossState > maxLoss) {
+        maxLoss = lossState; lossState = 0;
+    }
     money += profit*rate*money;
     grossprofit += profit*rate*money;
     vMoney.push_back(money);
@@ -42,6 +77,29 @@ void StrategyEffectiveness::setWin(int hour) {
 void StrategyEffectiveness::setLoss(int hour) {
     hloss[hour]++;
     loss++;
+    lossState++;
+    money -= rate*money;
+    grossloss += rate*money;
+    vMoney.push_back(money);
+}
+
+void StrategyEffectiveness::setWin(int hour, int minutes) {
+    mwin[hour*60 + minutes]++;
+    hwin[hour]++;
+    win++;
+    if(lossState > maxLoss) {
+        maxLoss = lossState; lossState = 0;
+    }
+    money += profit*rate*money;
+    grossprofit += profit*rate*money;
+    vMoney.push_back(money);
+}
+
+void StrategyEffectiveness::setLoss(int hour, int minutes) {
+    mloss[hour*60 + minutes]++;
+    hloss[hour]++;
+    loss++;
+    lossState++;
     money -= rate*money;
     grossloss += rate*money;
     vMoney.push_back(money);
@@ -54,7 +112,7 @@ double StrategyEffectiveness::getConsistency() {
     //double delta = ((double)(vMoney.back() - vMoney.front()) / (double)(vMoney.size()));
     double delta = ((double)(log(vMoney.back()) - log(vMoney.front())) / (double)(vMoney.size()));
     double y0 = log(vMoney.front());
-    for(int i = 1; i < vMoney.size() - 1; i++) {
+    for(int i = 1; i < (int)vMoney.size() - 1; i++) {
         double y = y0 + delta * (double)i;
         double diff = log(vMoney[i]) - y;
         sum += diff * diff;
@@ -71,7 +129,7 @@ double StrategyEffectiveness::getProfitStability() {
     double& trendProfit = delta;
     double y0 = log(vMoney.front());
     double totalVolume = 0;
-    for(int i = 0; i < vMoney.size(); i++) {
+    for(int i = 0; i < (int)vMoney.size(); i++) {
         double logMoney = log(vMoney[i]);
         double y = y0 + delta * (double)i;
         double diff = logMoney - y;
@@ -97,7 +155,7 @@ double StrategyEffectiveness::getProfitLoss() {
 double StrategyEffectiveness::getAverageGeometricYield() {
     if(vMoney.size() < 2) return 0;
     double mx = 1.0;
-    for(int i = 1; i < vMoney.size(); i++) {
+    for(int i = 1; i < (int)vMoney.size(); i++) {
         double ri = vMoney[i - 1] > 0 ? 1.0 + ((double)(vMoney[i] - vMoney[i - 1]) / (double)vMoney[i - 1]) : 0;
         //double ri = vMoney[i - 1] > 0 ? ((double)vMoney[i] / (double)vMoney[i - 1]) : 0;
         mx *= ri;
@@ -109,7 +167,7 @@ double StrategyEffectiveness::getAverageGeometricYield() {
 double StrategyEffectiveness::getAverageGeometricYieldMx() {
     if(vMoney.size() < 2) return 0;
     double mx = 1.0;
-    for(int i = 1; i < vMoney.size(); i++) {
+    for(int i = 1; i < (int)vMoney.size(); i++) {
         double ri = vMoney[i - 1] > 0 ? 1.0 + ((double)(vMoney[i] - vMoney[i - 1]) / (double)vMoney[i - 1]) : 0;
         //double ri = vMoney[i - 1] > 0 ? ((double)vMoney[i] / (double)vMoney[i - 1]) : 0;
         mx *= ri;
@@ -124,7 +182,7 @@ double StrategyEffectiveness::getCoeffSharpe() {
     double re = getAverageGeometricYield();
     if(re == 0) return 0;
     double sum = 0;
-    for(int i = 1; i < vMoney.size(); i++) {
+    for(int i = 1; i < (int)vMoney.size(); i++) {
         double ri = vMoney[i - 1] > 0 ? 1.0 + ((double)(vMoney[i] - vMoney[i - 1]) / (double)vMoney[i - 1]) : 0;
         //double ri = vMoney[i - 1] > 0 ? ((double)vMoney[i] / (double)vMoney[i - 1]) : 0;
         double diff = ri - re;
@@ -141,7 +199,7 @@ double StrategyEffectiveness::getBalanceMaxCoeffSharpe() {
     double re = getAverageGeometricYield();
     if(re == 0) return 0;
     double sum = 0;
-    for(int i = 1; i < vMoney.size(); i++) {
+    for(int i = 1; i < (int)vMoney.size(); i++) {
         double ri = vMoney[i - 1] > 0 ? 1.0 + ((double)(vMoney[i] - vMoney[i - 1]) / (double)vMoney[i - 1]) : 0;
         //double ri = vMoney[i - 1] > 0 ? ((double)vMoney[i] / (double)vMoney[i - 1]) : 0;
         double diff = ri - re;

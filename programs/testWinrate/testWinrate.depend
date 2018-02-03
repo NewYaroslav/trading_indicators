@@ -32,13 +32,13 @@
 1517419972 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
 	<vector>
 
-1517418478 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+1517429995 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
 	"TradingIndicators.hpp"
 	"NormalizationData.hpp"
 	<iostream>
 	"Drawing.hpp"
 
-1517417615 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+1517428883 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
 	<vector>
 	<numeric>
 	<algorithm>
@@ -48,7 +48,7 @@
 	<algorithm>
 	"TradingIndicators.hpp"
 
-1517421186 source:d:\yar\_repoz\trading_indicators\programs\testwinrate\main.cpp
+1517431505 source:d:\yar\_repoz\trading_indicators\programs\testwinrate\main.cpp
 	<iostream>
 	"ReadingData.hpp"
 	"TradingIndicators.hpp"

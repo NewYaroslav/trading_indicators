@@ -46,8 +46,10 @@ int main() {
         int stopPos = TestData.close.size() * stop; // конец данных
         std::cout << "Source: " << vPairName[n] << " data size: " << TestData.close.size() << std::endl;
 
-        Indicators::BollingerBands iBB(20, 2.0); // индикатор боллинджер
+        Indicators::BollingerBands iBB(25, 2.1); // индикатор боллинджер
         Indicators::RSI iRSI(14); // индикатор RSI
+        Indicators::LastExtrema iLE(5, 10);
+        Indicators::SearchMinMax iMinMax(30);
         StrategyEffectiveness iEffL;
 
         for(int i = startPos; i < stopPos - expTime; i++) {
@@ -55,29 +57,40 @@ int main() {
             double& closeFuture = TestData.close[i + expTime];
             int hour = TestData.hour[i];
 
+            iLE.updata(close);
+            iMinMax.updata(close);
             iBB.updata(close); // обновляем данные боллинджера
             double rsi = iRSI.updata(close); // обновляем данные RSI
 
-            if(close > iBB.tl && rsi > 80) {
-                if(closeFuture < close) {
-                    iEff.setWin(hour);
-                    iEffL.setWin(hour);
+            if(iLE.vExtremaUp.size() > 2 && iLE.vExtremaDown.size() > 2) {
+                double upLevel = iLE.vExtremaUp.back();
+                double downLevel = iLE.vExtremaDown.back();
+                double ampl = iMinMax.maxData - iMinMax.minData;
+                double upDiff = std::abs(upLevel - close) / ampl;
+                double downDiff = std::abs(downLevel - close) / ampl;
+
+                if(close > iBB.tl && upDiff <= 0.02) {
+                    if(closeFuture < close) {
+                        iEff.setWin(hour);
+                        iEffL.setWin(hour);
+                    } else
+                    if(closeFuture > close) {
+                        iEff.setLoss(hour);
+                        iEffL.setLoss(hour);
+                    }
                 } else
-                if(closeFuture > close) {
-                    iEff.setLoss(hour);
-                    iEffL.setLoss(hour);
-                }
-            } else
-            if(close < iBB.bl && rsi < 20) {
-                if(closeFuture > close) {
-                    iEff.setWin(hour);
-                    iEffL.setWin(hour);
-                } else
-                if(closeFuture < close) {
-                    iEff.setLoss(hour);
-                    iEffL.setLoss(hour);
+                if(close < iBB.bl && downDiff <= 0.02) {
+                    if(closeFuture > close) {
+                        iEff.setWin(hour);
+                        iEffL.setWin(hour);
+                    } else
+                    if(closeFuture < close) {
+                        iEff.setLoss(hour);
+                        iEffL.setLoss(hour);
+                    }
                 }
             }
+
         } // for
         std::cout << "Eff: " << iEffL.getEff() << " num win: " << iEffL.win << " num loss: " << iEffL.loss << std::endl;
         for(int i = 0; i < 24; i++) {
@@ -85,6 +98,7 @@ int main() {
             std::cout << "hour: " << i << " eff: " << eff << std::endl;
         }
     } // for
+    std::cout << "Eff: " << iEff.getEff() << " num win: " << iEff.win << " num loss: " << iEff.loss << std::endl;
     for(int i = 0; i < 24; i++) {
         double eff = (double)iEff.hwin[i] / (double)(iEff.hwin[i] + iEff.hloss[i]);
         std::cout << "hour: " << i << " eff: " << eff << std::endl;

@@ -1019,51 +1019,91 @@ namespace Indicators {
 
     PsychologicalLevel::PsychologicalLevel() {
         iWindow = Window(30);
-        vLevel.resize(10);
-        iSMA = SMA(60);
+        nLevel = 5;
     };
 
     PsychologicalLevel::PsychologicalLevel(int nLevel) {
         iWindow = Window(30);
-        vLevel.resize(nLevel);
-        iSMA = SMA(60);
+        PsychologicalLevel::nLevel = nLevel;
     }
 
     PsychologicalLevel::PsychologicalLevel(int nLevel, int nWindow) {
         iWindow = Window(nWindow);
-        vLevel.resize(nLevel);
-        iSMA = SMA(60);
+        PsychologicalLevel::nLevel = nLevel;
     }
 
     void PsychologicalLevel::updata(double input) {
         if(isFactor == false) iWindow.updata(input);
-        double smaData = iSMA.updata(input);
         if((int)iWindow.data.size() == iWindow.getPeriod()) {
-            double minData = *std::min_element(iWindow.data.begin(), iWindow.data.end());
-            double maxData = *std::max_element(iWindow.data.begin(), iWindow.data.end());
-
             if(isFactor == false) {
                 factor = Normalization::getNumberDecimals(iWindow.data, true);
+                diffMin = (double)nLevel/(double)factor;
                 isFactor = true;
             }
-
             //std::cout << "factor: " << factor << std::endl;
             //std::cout << "input: " << input << std::endl;
-            double nearestLevel = ((double)((int)((double)factor * smaData) / 50) * 50.0) / (double)factor;
-            //std::cout << "nearest level: " << nearestLevel << std::endl;
+            double nearestLevel = ((double)((int)((double)factor * input) / 100) * 100.0) / (double)factor;
 
-            if(vLevel.size() % 2 == 0) {
-                vLevel[(int)vLevel.size()/2] = nearestLevel;
-                for(int i = (int)vLevel.size()/2 + 1; i < (int)vLevel.size(); i++) {
-                    vLevel[i] = vLevel[i - 1] + 50.0/(double)factor;
+            double level100Up = input > nearestLevel ? nearestLevel + 100.0/(double)factor : nearestLevel;
+            double level100Down = input < nearestLevel ? nearestLevel - 100.0/(double)factor : nearestLevel;
+            double level80 = nearestLevel - 20.0/(double)factor;
+            double level20 = nearestLevel + 20.0/(double)factor;
+            double level50 = input > nearestLevel ? nearestLevel + 50.0/(double)factor : nearestLevel - 50.0/(double)factor;
+
+            double diff100Up, diff100Down, diff50, diff80, diff20;
+
+            diff100Up = std::abs(input - level100Up);
+            diff100Down = std::abs(input - level100Down);
+            diff50 = std::abs(input - level50);
+            diff80 = std::abs(input - level80);
+            diff20 = std::abs(input - level20);
+
+            if(diff100Up < diff100Down && diff100Up < diff50 && diff100Up < diff80 && diff100Up < diff20) {
+                if(diffMin >= diff100Up) {
+                    isLevel100 = true;
+                    isLevel80 = false;
+                    isLevel50 = false;
+                    isLevel20 = false;
                 }
-                for(int i = (int)vLevel.size()/2 - 1; i >= 0; i--) {
-                    vLevel[i] = vLevel[i + 1] - 50.0/(double)factor;
+            } else
+            if(diff100Down < diff100Up && diff100Down < diff50 && diff100Down < diff80 && diff100Down < diff20) {
+                if(diffMin >= diff100Down) {
+                    isLevel100 = true;
+                    isLevel80 = false;
+                    isLevel50 = false;
+                    isLevel20 = false;
                 }
+            } else
+            if(diff80 < diff100Up && diff80 < diff50 && diff80 < diff100Down && diff80 < diff20) {
+                if(diffMin >= diff80) {
+                    isLevel100 = false;
+                    isLevel80 = true;
+                    isLevel50 = false;
+                    isLevel20 = false;
+                }
+            } else
+            if(diff50 < diff100Up && diff50 < diff80 && diff50 < diff100Down && diff50 < diff20) {
+                if(diffMin >= diff50) {
+                    isLevel100 = false;
+                    isLevel80 = false;
+                    isLevel50 = true;
+                    isLevel20 = false;
+                }
+            } else
+            if(diff20 < diff100Up && diff20 < diff80 && diff20 < diff100Down && diff20 < diff50) {
+                if(diffMin >= diff20) {
+                    isLevel100 = false;
+                    isLevel80 = false;
+                    isLevel50 = false;
+                    isLevel20 = true;
+                }
+            } else {
+                isLevel100 = false;
+                isLevel80 = false;
+                isLevel50 = false;
+                isLevel20 = false;
             }
-
-        } else {
-            std::fill(vLevel.begin(), vLevel.end(), input);
+            //std::cout << "nearest level: " << nearestLevel << std::endl;
         }
     }
 
@@ -1082,6 +1122,40 @@ namespace Indicators {
             vMin[i] = vMin[i + offset - 1];
             vMax[i] = vMax[i + offset - 1];
         }
+    }
+
+    ShannonEntropy::ShannonEntropy() {};
+
+    ShannonEntropy::ShannonEntropy(int period) {
+        iWindow = Window(period + 1);
+        maxEntropy = log((double)period);
+    }
+
+    double ShannonEntropy::updata(double input) {
+        iWindow.updata(input);
+        if((int)iWindow.data.size() == iWindow.getPeriod()) {
+            const int binsCount = 3;
+            double hist[binsCount];
+            for (int i = 0; i < binsCount; i++) {hist[i] = 0.0;};
+            std::vector<double> vInput;
+            Normalization::calcDifference(iWindow.data, vInput);
+            for (int i = 0; i < vInput.size(); i++) {
+                int index = vInput[i] < 0.0 ? 0 : vInput[i] > 0.0 ? 2 : 1;
+                hist[index] = hist[index] + 1.0;
+            }
+            for (int i = 0; i < binsCount; i++) {
+                hist[i] = hist[i] / (double)vInput.size();
+            }
+            double h = 0.0;
+            for (int i = 0; i < binsCount; i++) {
+                if (hist[i] > std::numeric_limits<double>::min()) {
+                    h += hist[i] * log2(hist[i]);
+                }
+            }
+            h = -h;
+            return h/maxEntropy;
+        }
+        return 0.0;
     }
 
 }

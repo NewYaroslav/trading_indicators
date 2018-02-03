@@ -46,17 +46,17 @@ class CurrencyQuote {
         DTYYYYMMDD_TIME_OPEN_HIGH_LOW_CLOSE_VOL ///< Данные идут в порядке: <DTYYYYMMDD>,<TIME>,<OPEN>,<HIGH>,<LOW>,<CLOSE>,<VOL>
     } dataType = TICKER_DTYYYYMMDD_TIME_OPEN_HIGH_LOW_CLOSE_VOL;
     std::string nameCurrencyPair; ///< Имя валютной пары
-    std::vector<short> year;
-    std::vector<char> month;
-    std::vector<char> day;
-    std::vector<char> hour;
-    std::vector<char> minutes;
-    std::vector<char> seconds;
+    std::vector<short> year; ///< Год свечи
+    std::vector<char> month; ///< Месяц свечи
+    std::vector<char> day; ///< день свечи
+    std::vector<char> hour; ///< час свечи
+    std::vector<char> minutes; ///< минута свечи
+    std::vector<char> seconds; ///< секунда  свечи
 
-    std::vector<double> open;
-    std::vector<double> high;
-    std::vector<double> low;
-    std::vector<double> close;
+    std::vector<double> open; ///< цена открытия свечи
+    std::vector<double> high; ///< наивысшая цена свечи
+    std::vector<double> low; ///< наинизшая цена свечи
+    std::vector<double> close; ///< цена закрытия свечи
     //std::vector<int> vol;
 
     CurrencyQuote(std::string name);

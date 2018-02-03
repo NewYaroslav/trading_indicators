@@ -320,8 +320,8 @@ namespace Drawing {
         cv::putText(output, "4", cv::Point(width/4 + 30, 10), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(0,255,255), 1, 8, 0);
         cv::putText(output, text, cv::Point(8, 40), CV_FONT_HERSHEY_PLAIN, 1.0,cv::Scalar(125,255,0), 1, 8, 0);
 
-        if(mask == 1) {
-            std::string imageName = name + ".jpg";
+        if(mask & 0x10) {
+            std::string imageName = "img//" + name + ".jpg";
             cv::imwrite(imageName, output);
         }
 

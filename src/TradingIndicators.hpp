@@ -450,17 +450,20 @@ namespace Indicators {
                 vMa.push_back(MA_TYPE(startPeriod + n*stepPeriod));
             }
             vOutput.resize(nMa);
+            vPrevOutput.resize(nMa);
             MultiMa::nMa = nMa;
         };
         /** @brief ќбновить входные данные индикатора
             @param[in] input входные данные индикатора
         */
         void updata(double input) {
+            vPrevOutput = vOutput;
             for(int n = 0; n < nMa; n++) {
                 vOutput[n] = vMa[n].updata(input);
             }
         };
         std::vector<double> vOutput; ///< массив значений простых скольз€щих
+        std::vector<double> vPrevOutput;
     };
 
     /** @brief —кольз€щее окно
@@ -567,9 +570,10 @@ namespace Indicators {
         SMA iSmaMin;
         SMA iSmaMax;
         SearchMinMax iSearchMinMax;
-        double smaMin, smaMax, prevSmaMin, prevSmaMax;
+
         int stateMin = 0, stateMax = 0;
         public:
+        double smaMin, smaMax, prevSmaMin, prevSmaMax;
         bool isUpdataExtremaUp = false;
         bool isUpdataExtremaDown = false;
         std::vector<double> vExtremaUp;
@@ -589,18 +593,36 @@ namespace Indicators {
     class PsychologicalLevel {
         private:
         Window iWindow;
-        SMA iSMA;
         int factor;
         bool isFactor = false;
+        double diffMin;
+        int nLevel;
         public:
         PsychologicalLevel();
         PsychologicalLevel(int nLevel);
         PsychologicalLevel(int nLevel, int nWindow);
         void updata(double input);
-        std::vector<double> vLevel;
+        bool isLevel100 = false;
+        bool isLevel80 = false;
+        bool isLevel50 = false;
+        bool isLevel20 = false;
     };
 
     void getMinMaxBands(std::vector<double>& input, std::vector<double>& vMin, std::vector<double>& vMax, int period, int offset);
+
+    /** @brief Ёнтропи€ Ўеннона
+        Ёнтропи€ Ўеннона возвращаетс€ в виде процентов от 0.0 до 1.0
+        @version 1.0
+        @date 03.02.2018
+    */
+    class ShannonEntropy {
+        public:
+        Window iWindow;
+        double maxEntropy;
+        ShannonEntropy();
+        ShannonEntropy(int period);
+        double updata(double input);
+    };
 
 }
 

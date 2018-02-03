@@ -306,10 +306,10 @@ int CurrencyQuote::openFile(std::string name) {
 
             numberStr = strData2.substr(0, 2);
             char _hour = atoi(numberStr.c_str());
-            numberStr = strData2.substr(2, 2);
+            numberStr = strData2.substr(3, 2);
             char _minutes = atoi(numberStr.c_str());
-            numberStr = strData2.substr(4, 2);
-            char _seconds = atoi(numberStr.c_str());
+            //numberStr = strData2.substr(4, 2);
+            char _seconds = 0; //atoi(numberStr.c_str());
 
             //std::cout << (int)_hour << ":" << (int)_minutes << ":" << (int)_seconds << std::endl;
             // open

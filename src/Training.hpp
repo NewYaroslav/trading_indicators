@@ -61,7 +61,18 @@ namespace TrainingFunctions {
     */
     void getWindowTrainData(std::string name, int numTrainingSamples, int nWindow, std::vector<double>& data);
 
+    /** @brief ѕолучить данные нормированные внутри полос боллинджера
+        @param[in] name им€ файла дл€ сохранени€
+        @param[in] numTrainingSamples количество данных дл€ обучени€
+        @param[in] nMa период скольз€щей средней дл€ фильтрации данных
+        @param[in] nBb период боллинджера
+        @param[in] d множитель стандартного отколенни€ полос боллинджера
+        @param[in] nRsi период rsi
+        @param[in] nWindow размер окна
+        @param[in] data данные дл€ обработки
+    */
     void getNormBbRsiTrain(std::string name, int numTrainingSamples, int nMa, int nBb, double d, int nRsi, int nWindow, std::vector<double>& data);
+
 
     void getGoodTimeEmaRsiTrainData(std::string name, int numTrainingSamples, std::vector<double>& data);
 
