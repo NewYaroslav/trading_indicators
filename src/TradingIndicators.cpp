@@ -1139,7 +1139,7 @@ namespace Indicators {
             for (int i = 0; i < binsCount; i++) {hist[i] = 0.0;};
             std::vector<double> vInput;
             Normalization::calcDifference(iWindow.data, vInput);
-            for (int i = 0; i < vInput.size(); i++) {
+            for (int i = 0; i < (int)vInput.size(); i++) {
                 int index = vInput[i] < 0.0 ? 0 : vInput[i] > 0.0 ? 2 : 1;
                 hist[index] = hist[index] + 1.0;
             }
@@ -1156,6 +1156,72 @@ namespace Indicators {
             return h/maxEntropy;
         }
         return 0.0;
+    }
+
+    PriceMovementStatistics::PriceMovementStatistics() {};
+
+    PriceMovementStatistics::PriceMovementStatistics(int period, int nHist) {
+        iWindow = Window(period);
+        PriceMovementStatistics::nHist = nHist;
+        PriceMovementStatistics::period = period;
+        hist.reserve(nHist);
+    }
+
+    void PriceMovementStatistics::updata(double in) {
+        iWindow.updata(in);
+        if((int)iWindow.data.size() == iWindow.getPeriod()) {
+            hist.clear();
+            hist.resize(nHist);
+            double minData = *std::min_element(iWindow.data.begin(), iWindow.data.end());
+            double maxData = *std::max_element(iWindow.data.begin(), iWindow.data.end());
+            if(minData == maxData) {
+                pos = 0.5;
+                for(int i = 0; i < nHist; i++) {
+                    hist[i] = i != nHist/2 ? 0.0 : 1.0;
+                }
+                up = 0; down = 0; neutral = 1;
+                return;
+            }
+            double gain = (double) (nHist - 1) / (maxData - minData);
+            for(int i = 0; i < (int)iWindow.data.size(); i++) {
+                int index = std::floor(gain * (iWindow.data[i] - minData));
+                hist[index] = hist[index] + 1.0;
+            }
+            Normalization::calcMinMax(hist, hist, 0);
+            double maxHist = 0;
+            int setPos = 0;
+            double sum = 0;
+            for(int i = 0; i < nHist; i++) {
+                if(hist[i] > maxHist) {
+                    maxHist = hist[i];
+                    setPos = i;
+                }
+                sum += hist[i];
+            }
+            pos = (double)setPos / (double)(nHist - 1);
+            // для прогноза вверх вниз
+            up = 0; down = 0; neutral = 0;
+            for(int i = 0; i < std::floor(nHist/2); i++) {
+                down += hist[i];
+            }
+            for(int i = std::ceil(nHist/2); i < nHist; i++) {
+                up += hist[i];
+            }
+            for(int i = std::floor(nHist/3); i < std::ceil(2*nHist/3); i++) {
+                neutral += hist[i];
+            }
+            up /= sum;
+            down /= sum;
+            neutral /= sum;
+        } else {
+            hist.clear();
+            hist.resize(nHist);
+            pos = 0.5;
+            for(int i = 0; i < nHist; i++) {
+                hist[i] = i != nHist/2 ? 0.0 : 1.0;
+            }
+            up = 0; down = 0; neutral = 1;
+        }
     }
 
 }

@@ -1,0 +1,201 @@
+# depslib dependency file v1.0
+1517671306 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
+	"Drawing.hpp"
+
+1517672270 d:\yar\_repoz\trading_indicators\src\drawing.hpp
+	<vector>
+	<string>
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/core.hpp"
+	"opencv2/opencv.hpp"
+
+1517395571 source:d:\yar\_repoz\trading_indicators\src\fannfunctions.cpp
+	"FannFunctions.hpp"
+	<iostream>
+
+1517395571 d:\yar\_repoz\trading_indicators\src\fannfunctions.hpp
+	<vector>
+	<string>
+	"fann.h"
+	"floatfann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann.h
+	"fixedfann.h"
+	"floatfann.h"
+	<sys/time.h>
+	<windows.h>
+	"fann_error.h"
+	"fann_activation.h"
+	"fann_data.h"
+	"fann_internal.h"
+	"fann_train.h"
+	"fann_cascade.h"
+	"fann_io.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fixedfann.h
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\floatfann.h
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_error.h
+	<stdio.h>
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_activation.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_data.h
+	<stdio.h>
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_internal.h
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	"fann_data.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_train.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_cascade.h
+
+1513643516 d:\yar\_repoz\fann\src\include\fann_io.h
+
+1516564005 source:d:\yar\_repoz\trading_indicators\src\normalizationdata.cpp
+	"NormalizationData.hpp"
+
+1517288126 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
+	<vector>
+	<algorithm>
+	"TradingIndicators.hpp"
+
+1517708891 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+	<vector>
+	<numeric>
+	<algorithm>
+
+1517666106 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+	"ReadingData.hpp"
+	<string.h>
+	<stdlib.h>
+	<dirent.h>
+	<vector>
+	<string>
+	"stdio.h"
+	<fstream>
+	<iostream>
+
+1517673998 d:\yar\_repoz\trading_indicators\src\readingdata.hpp
+	<vector>
+	<string>
+
+1515966248 source:d:\yar\_repoz\trading_indicators\src\scaling.cpp
+	"Scaling.hpp"
+	<string>
+	<algorithm>
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/core.hpp"
+	"opencv2/opencv.hpp"
+	<iostream>
+
+1515964507 d:\yar\_repoz\trading_indicators\src\scaling.hpp
+	<vector>
+
+1517672359 source:d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.cpp
+	"StrategyEffectiveness.hpp"
+	<cmath>
+
+1517672401 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
+	<vector>
+
+1517747229 source:d:\yar\_repoz\trading_indicators\src\forextesting.cpp
+	"ForexTesting.hpp"
+	<iostream>
+
+1517748987 d:\yar\_repoz\trading_indicators\src\forextesting.hpp
+	<vector>
+
+1517709754 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+	"TradingIndicators.hpp"
+	"NormalizationData.hpp"
+	<iostream>
+	"Drawing.hpp"
+
+1517749047 source:d:\yar\_repoz\trading_indicators\programs\testforex\main.cpp
+	<iostream>
+	"TradingIndicators.hpp"
+	"ReadingData.hpp"
+	"Drawing.hpp"
+	"ForexTesting.hpp"
+
+1513643516 source:d:\yar\_repoz\fann\src\floatfann.c
+	"config.h"
+	"floatfann.h"
+	"fann.c"
+	"fann_io.c"
+	"fann_train.c"
+	"fann_train_data.c"
+	"fann_error.c"
+	"fann_cascade.c"
+	"parallel_fann.c"
+
+1513643516 d:\yar\_repoz\fann\src\include\config.h
+
+1513643516 d:\yar\_repoz\fann\src\fann.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<time.h>
+	<math.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_io.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	"config.h"
+	"fann.h"
+	"fann_data.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_train.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<math.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_train_data.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_error.c
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<string.h>
+	<limits.h>
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\fann_cascade.c
+	"config.h"
+	"fann.h"
+	"string.h"
+
+1513643516 d:\yar\_repoz\fann\src\parallel_fann.c
+	<omp.h>
+	"parallel_fann.h"
+	"config.h"
+	"fann.h"
+
+1513643516 d:\yar\_repoz\fann\src\include\parallel_fann.h
+	"fann.h"
+

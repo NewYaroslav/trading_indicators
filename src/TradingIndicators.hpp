@@ -624,6 +624,18 @@ namespace Indicators {
         double updata(double input);
     };
 
+    class PriceMovementStatistics {
+        public:
+        int period, nHist;
+        Window iWindow;
+        PriceMovementStatistics();
+        PriceMovementStatistics(int period, int nHist);
+        void updata(double in);
+        std::vector<double> hist;
+        double pos;
+        double up, down, neutral;
+    };
+
 }
 
 #endif // TRADINGINDICATORS_HPP_INCLUDED
