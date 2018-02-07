@@ -159,8 +159,9 @@ namespace Drawing {
             //const int RGB_TABLE[] = {0x000000FF,0x000000FF}
 
             if(in[i].indicator.size() > 0) {
-                if(i + 1 < (int)in.size() && in[i].indicator.size() == in[i + 1].indicator.size()) {
+                if(i + 1 < (int)in.size()) {
                     for(int k = 0; k < (int)in[i].indicator.size(); k++) {
+                        if(k >= (int)in[i + 1].indicator.size()) break;
                         double indic = heightDiv2 - ((in[i].indicator[k] - aver) * sacle);
                         double indic2 = heightDiv2 - ((in[i + 1].indicator[k] - aver) * sacle);
                         if(k < lineColor.size()) {

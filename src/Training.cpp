@@ -358,6 +358,7 @@ namespace TrainingFunctions {
             double& closeFutureA = data[i + 1];
             double& closeFutureB = data[i + 2];
             double& closeFutureC = data[i + 3];
+
             //double& closeFutureD = data[i + 4];
             //double& closeFutureE = data[i + 5];
 
@@ -388,7 +389,8 @@ namespace TrainingFunctions {
                 state2 = 1;
             }
 
-            if(i > startPos &&
+            if (
+                i > startPos &&
                 (int)iNeuroWindow.data.size() == iNeuroWindow.getPeriod()) {
                 std::vector<double> vInputData = iNeuroWindow.data;
                 std::vector<double> vOutput(5);

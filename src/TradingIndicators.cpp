@@ -973,12 +973,15 @@ namespace Indicators {
             }
             if((int)vExtremaUp.size() > numExtrema) {
                 vExtremaUp.erase(vExtremaUp.begin());
+                initStep |= 0x01;
             }
             if((int)vExtremaDown.size() > numExtrema) {
                 vExtremaDown.erase(vExtremaDown.begin());
+                initStep |= 0x02;
             }
             if((int)vExtrema.size() > numExtrema) {
                 vExtrema.erase(vExtrema.begin());
+                initStep |= 0x04;
             }
         }
     }
@@ -1222,6 +1225,27 @@ namespace Indicators {
             }
             up = 0; down = 0; neutral = 1;
         }
+    }
+
+    TrendIndicator::TrendIndicator() {};
+
+    TrendIndicator::TrendIndicator(int period) {
+        iWindow = Window(period);
+    };
+
+    double TrendIndicator::updata(double input) {
+        iWindow.updata(input);
+        if(iWindow.getPeriod() == (int)iWindow.data.size()) {
+            Normalization::calcDifference(iWindow.data, diff);
+            double mean = Normalization::calcMean(diff);
+            double stdDev = Normalization::calcStdDev(diff, mean);
+            if(mean == 0) return 0;
+            double percent = stdDev / mean;
+            if(percent > 1.0 || percent < -1.0) percent = 0.0;
+            percent = percent > 0.0 ? 1.0 - percent : percent < 0.0 ? -(percent + 1.0) : 0.0;
+            return percent;
+        }
+        return 0;
     }
 
 }

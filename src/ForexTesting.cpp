@@ -16,6 +16,7 @@ namespace ForexTesting {
         const double LOT1 = 100000.0;
         sOrder order;
         order.lot = lot;
+        order.price = price;
         if(isBuyOrSell == 1) {
             order.openPrice = price + spread;
         } else {
@@ -36,6 +37,9 @@ namespace ForexTesting {
         order.stopLoss = stopLoss;
         order.takeProfit = takeProfit;
         order.isClose = 0;
+        order.isOpen = 1;
+        order.isPending = 0;
+        order.isTouching = 0;
         countId++;
         order.id = countId;
         id = countId;
@@ -46,34 +50,64 @@ namespace ForexTesting {
         vOrder.push_back(order);
     }
 
+    void Testing::setPendingOrder(double price, double lot, int leverage, int isBuyOrSell, double spread, double stopLoss, double takeProfit, int& id) {
+        setOrder(price, lot, leverage, isBuyOrSell, spread, stopLoss, takeProfit, id);
+        vOrder[vOrder.size() - 1].isOpen = 0;
+        vOrder[vOrder.size() - 1].isPending = 1;
+    }
+
     void Testing::updata(double priceHigh, double priceLow, double price, double spread) {
         for(int n = 0; n < (int)vOrder.size(); n++) {
             if(vOrder[n].isClose) continue;
+
+            if(vOrder[n].isOpen == 0) {
+                if(vOrder[n].isBuyOrSell == 1) {
+                    if(priceHigh + spread >= vOrder[n].price) {
+                        if(vOrder[n].isTouching) {
+                            vOrder[n].isOpen = 1;
+                            vOrder[n].openPrice = vOrder[n].price;
+                            //std::cout << "open buy Order" << std::endl;
+                        }
+                    } else {
+                        vOrder[n].isTouching = 1;
+                    }
+                } else
+                if(vOrder[n].isBuyOrSell == -1) {
+                    if(priceLow <= vOrder[n].price) {
+                        if(vOrder[n].isTouching) {
+                            vOrder[n].isOpen = 1;
+                            vOrder[n].openPrice = vOrder[n].price;
+                        }
+                    } else {
+                        vOrder[n].isTouching = 1;
+                    }
+                }
+            } else
             if(vOrder[n].isBuyOrSell == 1) {
                 if(priceLow <= vOrder[n].stopLoss) {
                     // сделка закрылась в минус
-                    std::cout << "buy loss: " << std::endl;
+                    //std::cout << "buy loss: " << std::endl;
                     //money += vOrder[n].contract;
                     vOrder[n].closePrice = vOrder[n].stopLoss;
                     money += calcProfitsLosses(vOrder[n].contract, vOrder[n].openPrice,  vOrder[n].closePrice, vOrder[n].isBuyOrSell);
-                    std::cout << "loss money: " << money << std::endl;
+                    //std::cout << "loss money: " << money << std::endl;
                     vOrder[n].isClose = 1;
                     vMoney.push_back(money);
                 } else
                 if(priceHigh >= vOrder[n].takeProfit) {
                     // сделка закрылась в плюс
-                    std::cout << "buy win: " << std::endl;
+                    //std::cout << "buy win: " << n << std::endl;
                     //money += vOrder[n].contract;
                     vOrder[n].closePrice = vOrder[n].takeProfit;
                     money += calcProfitsLosses(vOrder[n].contract, vOrder[n].openPrice,  vOrder[n].closePrice, vOrder[n].isBuyOrSell);
-                    std::cout << "win money: " << money << std::endl;
+                    //std::cout << "win money: " << money << std::endl;
                     vOrder[n].isClose = 1;
                     vMoney.push_back(money);
                 }
             } else {
                 if(priceHigh + spread >= vOrder[n].stopLoss) {
                     // сделка закрылась в минус
-                    std::cout << "sell loss: " << std::endl;
+                    //std::cout << "sell loss: " << std::endl;
                     vOrder[n].closePrice = vOrder[n].stopLoss;
                     money += calcProfitsLosses(vOrder[n].contract, vOrder[n].openPrice,  vOrder[n].closePrice, vOrder[n].isBuyOrSell);
                     vOrder[n].isClose = 1;
@@ -81,7 +115,7 @@ namespace ForexTesting {
                 } else
                 if(priceLow + spread <= vOrder[n].takeProfit) {
                     // сделка закрылась в плюс
-                    std::cout << "sell win: " << std::endl;
+                    //std::cout << "sell win: " << std::endl;
                     vOrder[n].closePrice = vOrder[n].takeProfit;
                     money += calcProfitsLosses(vOrder[n].contract, vOrder[n].openPrice,  vOrder[n].closePrice, vOrder[n].isBuyOrSell);
                     vOrder[n].isClose = 1;
@@ -113,6 +147,23 @@ namespace ForexTesting {
     int Testing::getBuySellFlag(int id) {
         for(int n = 0; n < (int)vOrder.size(); n++) {
             if(vOrder[n].id == id) return vOrder[n].isBuyOrSell;
+        }
+        return 0;
+    }
+
+    int Testing::getStateOpenOrder(int id) {
+        for(int n = 0; n < (int)vOrder.size(); n++) {
+            if(vOrder[n].id == id) return vOrder[n].isOpen;
+        }
+        return -1;
+    }
+
+    int Testing::deletePendingOrder(int id) {
+        for(int n = 0; n < (int)vOrder.size(); n++) {
+            if(vOrder[n].id == id && vOrder[n].isOpen == 0) {
+                vOrder.erase(vOrder.begin() + n);
+                return 1;
+            }
         }
         return 0;
     }

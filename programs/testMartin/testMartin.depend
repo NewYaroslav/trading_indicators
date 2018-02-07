@@ -1,0 +1,63 @@
+# depslib dependency file v1.0
+1517760993 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
+	"Drawing.hpp"
+
+1517672270 d:\yar\_repoz\trading_indicators\src\drawing.hpp
+	<vector>
+	<string>
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/core.hpp"
+	"opencv2/opencv.hpp"
+
+1517666106 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+	"ReadingData.hpp"
+	<string.h>
+	<stdlib.h>
+	<dirent.h>
+	<vector>
+	<string>
+	"stdio.h"
+	<fstream>
+	<iostream>
+
+1517673998 d:\yar\_repoz\trading_indicators\src\readingdata.hpp
+	<vector>
+	<string>
+
+1517672359 source:d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.cpp
+	"StrategyEffectiveness.hpp"
+	<cmath>
+
+1517672401 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
+	<vector>
+
+1517935364 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+	"TradingIndicators.hpp"
+	"NormalizationData.hpp"
+	<iostream>
+	"Drawing.hpp"
+
+1517933788 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+	<vector>
+	<numeric>
+	<algorithm>
+
+1517288126 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
+	<vector>
+	<algorithm>
+	"TradingIndicators.hpp"
+
+1517961420 source:d:\yar\_repoz\trading_indicators\src\martingale.cpp
+	"Martingale.hpp"
+
+1517961408 d:\yar\_repoz\trading_indicators\src\martingale.hpp
+	<vector>
+
+1517961434 source:d:\yar\_repoz\trading_indicators\programs\testmartin\main.cpp
+	<iostream>
+	"TradingIndicators.hpp"
+	"ReadingData.hpp"
+	"Drawing.hpp"
+	"Martingale.hpp"
+

@@ -565,6 +565,7 @@ namespace Indicators {
         int state = 0;
         int numExtrema = 10;
         int tick = 0;
+        int initStep = 0;
         //int period = 10;
         Window iWindow;
         SMA iSmaMin;
@@ -584,6 +585,7 @@ namespace Indicators {
         void updata(double input);
         int getNumExtrema() {return numExtrema;};
         int getTick() {return tick;};
+        int getInitState() {if(initStep & 0x07) return 1; return 0;};
     };
 
     /** @brief Психологически важные уровни
@@ -624,6 +626,8 @@ namespace Indicators {
         double updata(double input);
     };
 
+    /** @brief Статистика движения цены
+    */
     class PriceMovementStatistics {
         public:
         int period, nHist;
@@ -634,6 +638,16 @@ namespace Indicators {
         std::vector<double> hist;
         double pos;
         double up, down, neutral;
+    };
+
+    class TrendIndicator {
+        public:
+        std::vector<double> diff;
+        Window iWindow;
+        TrendIndicator();
+        TrendIndicator(int period);
+        double updata(double input);
+        int state;
     };
 
 }

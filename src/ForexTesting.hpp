@@ -18,14 +18,18 @@ namespace ForexTesting {
             int id; ///< номер сделки
             double contract; /// размер контракта
             double lot; ///< размер лота
+            double price;
             double onePointValue; ///< стоимость пункта
             double openPrice; ///< цена на момент заключения контракта
             double closePrice; ///< цена на момент закрытия контракта
             double pledge; ///< залог
             double stopLoss;
             double takeProfit;
-            int isBuyOrSell;
-            int isClose;
+            int isBuyOrSell; ///< флаг типа сделки, если 1 то buy, если -1 то sell
+            int isClose; ///< флаг завершения сделки
+            int isPending; ///< флаг отложенного ордера
+            int isOpen; ///< флаг открытия ордера
+            int isTouching;
         };
 
         std::vector<sOrder> vOrder;
@@ -43,6 +47,9 @@ namespace ForexTesting {
             @param[in] id номер сделки
         */
         void setOrder(double price, double lot, int leverage, int isBuyOrSell, double spread, double stopLoss, double takeProfit, int& id);
+
+
+        void setPendingOrder(double price, double lot, int leverage, int isBuyOrSell, double spread, double stopLoss, double takeProfit, int& id);
 
         /** @brief обновить данные по ордерам
             @param[in] priceHigh цена high бара
@@ -75,6 +82,10 @@ namespace ForexTesting {
             @return вернет 1 в случае buy сделки, -1 в случае sell сделки, 0 в случае если сделка не найдена
         */
         int getBuySellFlag(int id);
+
+        int getStateOpenOrder(int id);
+
+        int deletePendingOrder(int id);
     };
 
 }
