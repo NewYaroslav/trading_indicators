@@ -42,7 +42,7 @@ int main()
         int stopPos = TestData.close.size() * stop; // конец данных
         std::cout << "Source: " << vPairName[n] << " data size: " << TestData.close.size() << std::endl;
 
-        Indicators::BollingerBands iBB(100, 2);
+        Indicators::BollingerBands iBB(20, 2);
 
         Drawing::Window iWindow(80);
 
@@ -64,28 +64,30 @@ int main()
             double& open = TestData.open[i];
             double& high = TestData.high[i];
             double& low = TestData.low[i];
+            int hour = TestData.hour[i];
 
             iBB.updata(close);
 
             iWindow.updata(open, high, low, close);
-            //iWindow.setIndicator(iBB.tl);
-            //iWindow.setIndicator(iBB.bl);
+            iWindow.setIndicator(iBB.tl);
+            iWindow.setIndicator(iBB.bl);
             //iWindow.setIndicator(close + spread);
 
             iForex.updata(high, low, close, spread);
 
             // открываем сделку buy, если
+            if(hour == 0 || hour == 23)
             if(close < iBB.bl && isBlock == 0) {
-                stopLoss = close - iForex.onePoint * 30;
-                takeProfit = close + iForex.onePoint * 80 + spread;
+                stopLoss = close - iForex.onePoint * 6;
+                takeProfit = close + iForex.onePoint * 16 + spread;
                 openPrice = close;
                 const int IS_BUY = 1;
                 iForex.setOrder(close, lot, leverage, IS_BUY, spread, stopLoss, takeProfit, idOrder);
                 isBlock = 1;
             } else
             if(close > iBB.tl && isBlock == 0) {
-                takeProfit = close - iForex.onePoint * 80;
-                stopLoss = close + iForex.onePoint * 30 + spread;
+                takeProfit = close - iForex.onePoint * 16;
+                stopLoss = close + iForex.onePoint * 6 + spread;
                 openPrice = close;
                 const int IS_SELL = -1;
                 iForex.setOrder(close, lot, leverage, IS_SELL, spread, stopLoss, takeProfit, idOrder);
@@ -120,6 +122,7 @@ int main()
                 }
             }
 
+            if(hour == 0 || hour == 23)
             if(1) {
                 std::vector<Drawing::CandlesType> data = iWindow.getCandlesType();
                 Drawing::viewCandleGraph("Source", data, 0);
@@ -129,6 +132,11 @@ int main()
             }
 
         } // for
+        std::vector<double> vNull;
+        Drawing::drawOscilloscope4xBeam("money"," money: ", iForex.vMoney, vNull, vNull, vNull, 1200, 400, 0);
+        while(1) {
+            cv::waitKey(10);
+        }
     } // for
 
     return 0;

@@ -217,6 +217,16 @@ namespace Normalization {
         double updata(double input);
     };
 
+    /** @brief Сгладить данные
+        Функция сглаживает данные с помощью SMA, затем сдигает сглаженные данные на период SMA
+        @param[in] input входные данные
+        @param[in] period период SMA
+        @return сглаженные данные
+    */
+    std::vector<double> smoothOutData(std::vector<double>& input, int period);
+
+    int getMax(std::vector<double>& input, int pos);
+
 }
 
 #endif // NORMALIZATIONDATA_HPP_INCLUDED

@@ -1248,4 +1248,27 @@ namespace Indicators {
         return 0;
     }
 
+    StandardDeviation::StandardDeviation() {
+        n = 20;
+    };
+
+    StandardDeviation::StandardDeviation(int period) {
+        n = period;
+    }
+
+    double StandardDeviation::updata(double input) {
+        data.push_back(input);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+        }
+        double ml = std::accumulate(data.begin(), data.end(), double(0));
+        ml /= (double)n;
+        double sum = 0;
+        for (int i = 0; i < (int)data.size(); i++) {
+            double diff = (data[i] - ml);
+            sum +=  diff * diff;
+        }
+        double stdDev = std::sqrt(sum / (double)(data.size() - 1));
+        return stdDev;
+    }
 }

@@ -61,8 +61,10 @@ namespace ForexTesting {
             if(vOrder[n].isClose) continue;
 
             if(vOrder[n].isOpen == 0) {
+                double ask = priceHigh + spread;
+                double& bid = priceLow;
                 if(vOrder[n].isBuyOrSell == 1) {
-                    if(priceHigh + spread >= vOrder[n].price) {
+                    if(ask >= vOrder[n].price) {
                         if(vOrder[n].isTouching) {
                             vOrder[n].isOpen = 1;
                             vOrder[n].openPrice = vOrder[n].price;
@@ -73,7 +75,7 @@ namespace ForexTesting {
                     }
                 } else
                 if(vOrder[n].isBuyOrSell == -1) {
-                    if(priceLow <= vOrder[n].price) {
+                    if(bid <= vOrder[n].price) {
                         if(vOrder[n].isTouching) {
                             vOrder[n].isOpen = 1;
                             vOrder[n].openPrice = vOrder[n].price;
@@ -104,7 +106,7 @@ namespace ForexTesting {
                     vOrder[n].isClose = 1;
                     vMoney.push_back(money);
                 }
-            } else {
+            } else if(vOrder[n].isBuyOrSell == -1) {
                 if(priceHigh + spread >= vOrder[n].stopLoss) {
                     // сделка закрылась в минус
                     //std::cout << "sell loss: " << std::endl;

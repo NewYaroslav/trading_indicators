@@ -48,13 +48,13 @@
 	<algorithm>
 	"TradingIndicators.hpp"
 
-1517961420 source:d:\yar\_repoz\trading_indicators\src\martingale.cpp
+1517961514 source:d:\yar\_repoz\trading_indicators\src\martingale.cpp
 	"Martingale.hpp"
 
 1517961408 d:\yar\_repoz\trading_indicators\src\martingale.hpp
 	<vector>
 
-1517961434 source:d:\yar\_repoz\trading_indicators\programs\testmartin\main.cpp
+1518113157 source:d:\yar\_repoz\trading_indicators\programs\testmartin\main.cpp
 	<iostream>
 	"TradingIndicators.hpp"
 	"ReadingData.hpp"

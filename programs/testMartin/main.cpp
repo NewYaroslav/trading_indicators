@@ -54,6 +54,9 @@ int main() {
         int isStop = 0;
         int nDay = 0;
         int nDelay = 0;
+        int isSetDeal = 0;
+
+        Indicators::BollingerBands iBB(20, 2.0);
 
         for(int i = startPos + 1; i < stopPos - 5; i++) {
             double& open = TestData.open[i];
@@ -71,14 +74,25 @@ int main() {
             int hour = TestData.hour[i];
 
             iWindow.updata(open, high, low, close);
+            iBB.updata(close);
 
             int stateMartin = 0; // состояние предсказания для мартингейла
+            #if(0)
             if(close > prevClose) {
                 stateMartin = 1;
             } else
             if(close < prevClose) {
                 stateMartin = -1;
             }
+            #else
+            if(close > iBB.tl) {
+                stateMartin = -1;
+            } else
+            if(close < iBB.bl) {
+                stateMartin = 1;
+            }
+            #endif
+
 
             int stateFuture = 0; // состояние цены в будущем
             if(close > closeFutureA) {
@@ -117,11 +131,13 @@ int main() {
             if(iMartingale.stop == true) {
                 std::cout << "stop!" << std::endl;
                 std::vector<double> vNull;
-                Drawing::drawOscilloscope4xBeam("money", "money", iMartingale.vMoney, vNull, vNull, vNull, 800, 400, 0);
+                Drawing::drawOscilloscope4xBeam("money", "money", iMartingale.vMoney, vNull, vNull, vNull, 800, 400, 0x10);
                 std::cout << "eff: " << iMartingale.eff << " nDay: " << nDay << std::endl;
                 while(1) {
-                    cv::waitKey(10);
+                    char symbol = cv::waitKey(10);
+                    if(symbol == 'B' || symbol == 'b') break;
                 }
+                break;
             }
 
             if(hour == 5 || hour == 6) {
@@ -138,14 +154,15 @@ int main() {
 
             if(i == stopPos - 6) {
                 std::vector<double> vNull;
-                Drawing::drawOscilloscope4xBeam("money", "money", iMartingale.vMoney, vNull, vNull, vNull, 800, 400, 0);
+                Drawing::drawOscilloscope4xBeam("money", "money", iMartingale.vMoney, vNull, vNull, vNull, 800, 400, 0x10);
                 std::cout << "eff: " << iMartingale.eff << " nDay: " << nDay << std::endl;
             }
 
         } // for
 
         while(1) {
-            cv::waitKey(10);
+            char symbol = cv::waitKey(10);
+            if(symbol == 'B' || symbol == 'b') break;
         }
     }
 

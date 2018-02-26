@@ -196,6 +196,7 @@ double StrategyEffectiveness::getCoeffSharpe() {
 
 double StrategyEffectiveness::getBalanceMaxCoeffSharpe() {
     if(vMoney.size() < 2) return 0;
+    if(win == 0) return 0;
     double re = getAverageGeometricYield();
     if(re == 0) return 0;
     double sum = 0;
@@ -214,7 +215,7 @@ double StrategyEffectiveness::getBalanceMaxCoeffSharpe() {
 
 
 double StrategyEffectiveness::getEff() {
-    return win > 0 ? (double)win /(double)(win + loss) : 0;
+    return win + loss > 0 ? (double)win /(double)(win + loss) : 0;
 }
 
 int StrategyEffectiveness::getGoodHour() {

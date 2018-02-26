@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1517671306 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
+1517760993 source:d:\yar\_repoz\trading_indicators\src\drawing.cpp
 	"Drawing.hpp"
 
 1517672270 d:\yar\_repoz\trading_indicators\src\drawing.hpp
@@ -14,7 +14,7 @@
 	"FannFunctions.hpp"
 	<iostream>
 
-1517395571 d:\yar\_repoz\trading_indicators\src\fannfunctions.hpp
+1518027705 d:\yar\_repoz\trading_indicators\src\fannfunctions.hpp
 	<vector>
 	<string>
 	"fann.h"
@@ -67,7 +67,7 @@
 	<algorithm>
 	"TradingIndicators.hpp"
 
-1517708891 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+1517933788 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
 	<vector>
 	<numeric>
 	<algorithm>
@@ -107,20 +107,20 @@
 1517672401 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
 	<vector>
 
-1517747229 source:d:\yar\_repoz\trading_indicators\src\forextesting.cpp
+1518794093 source:d:\yar\_repoz\trading_indicators\src\forextesting.cpp
 	"ForexTesting.hpp"
 	<iostream>
 
-1517748987 d:\yar\_repoz\trading_indicators\src\forextesting.hpp
+1517788995 d:\yar\_repoz\trading_indicators\src\forextesting.hpp
 	<vector>
 
-1517709754 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+1517935364 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
 	"TradingIndicators.hpp"
 	"NormalizationData.hpp"
 	<iostream>
 	"Drawing.hpp"
 
-1517749047 source:d:\yar\_repoz\trading_indicators\programs\testforex\main.cpp
+1518796090 source:d:\yar\_repoz\trading_indicators\programs\testforex\main.cpp
 	<iostream>
 	"TradingIndicators.hpp"
 	"ReadingData.hpp"

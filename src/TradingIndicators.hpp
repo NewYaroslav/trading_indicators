@@ -650,6 +650,25 @@ namespace Indicators {
         int state;
     };
 
+    class StandardDeviation {
+        private:
+        int n;
+        std::vector<double> data;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 20)
+        */
+        StandardDeviation();
+        /** @brief Инициализация индикатора с заданными настройками
+            @param[in] period период индикатора
+            @param[in] d множитель стандартного отклонения
+        */
+        StandardDeviation(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+        */
+        double updata(double input);
+    };
+
 }
 
 #endif // TRADINGINDICATORS_HPP_INCLUDED

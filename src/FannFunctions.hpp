@@ -87,9 +87,29 @@ namespace FannFunctions {
         return out;
     }
 
+    /** @brief ѕреобразовать данные нейронной сети в вектор
+        @param[in] in вектор данных
+        @return указатель на массив
+    */
+    template<class dataType>
+    std::vector<dataType> conversion(fann_type* in, int n) {
+        std::vector<dataType> out(n);
+        for(int i = 0; i < n; i++) {
+            out[i] = in[i];
+        }
+        return out;
+    }
+
     template<class dataType>
     void conversion(std::vector<dataType>& in, fann_type* out) {
         for(int i = 0; i < (int)in.size(); i++) {
+            out[i] = in[i];
+        }
+    }
+
+    template<class dataType>
+    void conversion(fann_type* in, int n, std::vector<dataType>& out) {
+        for(int i = 0; i < n; i++) {
             out[i] = in[i];
         }
     }

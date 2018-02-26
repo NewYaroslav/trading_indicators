@@ -46,4 +46,32 @@ namespace Normalization {
         }
         return 0.0;
     }
+
+    std::vector<double> smoothOutData(std::vector<double>& input, int period) {
+        Indicators::SMA iSMA(period);
+        std::vector<double> output(input.size());
+        for(size_t i = 0; i < input.size(); i++) {
+            output[i] = iSMA.updata(input[i]);
+        }
+        size_t outSize = input.size() - period - 1;
+        for(size_t i = 0; i < outSize; i++) {
+            output[i] = output[i + period - 1];
+        }
+        output.resize(outSize);
+        return output;
+    }
+
+    int getMax(std::vector<double>& input, int pos) {
+        int num = 0;
+        for(size_t i = 1; i < input.size() - 1; i++) {
+            if(input[i] > input[i - 1] && input[i] > input[i + 1]) {
+                if(pos == num) {
+                    return i;
+                } else {
+                    num++;
+                }
+            }
+        }
+        return -1;
+    }
 }
