@@ -194,6 +194,24 @@ double StrategyEffectiveness::getCoeffSharpe() {
     return (re/sigma);
 }
 
+double StrategyEffectiveness::getCoeffSortino() {
+    if(vMoney.size() < 3) return 0;
+    double re = getAverageGeometricYield();
+    if(re == 0) return 0;
+    double sum = 0;
+    for(int i = 1; i < (int)vMoney.size(); i++) {
+        double ri = vMoney[i - 1] > 0 ? 1.0 + ((double)(vMoney[i] - vMoney[i - 1]) / (double)vMoney[i - 1]) : 0;
+        //double ri = vMoney[i - 1] > 0 ? ((double)vMoney[i] / (double)vMoney[i - 1]) : 0;
+        double diff = ri - re;
+        sum += diff * diff;
+    }
+    if(sum == 0) return 0;
+    double sigma = (1.0 / (double)(vMoney.size() - 1)) * sqrt(sum);
+    //return sqrt((double)vMoney.size())*(re/sigma);
+    return (re/sigma);
+}
+
+
 double StrategyEffectiveness::getBalanceMaxCoeffSharpe() {
     if(vMoney.size() < 2) return 0;
     if(win == 0) return 0;

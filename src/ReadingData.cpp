@@ -132,20 +132,6 @@ int CurrencyQuote::getDifference(int year, int month, int day, int hour, int min
     return 0;
 }
 
-int CurrencyQuote::getIntData(std::string buffer, std::size_t offset, std::size_t& found) {
-    found = buffer.find_first_of(";,", offset);
-    std::string numberStr = buffer.substr(offset, found - offset);
-    found += 1;
-    return atoi(numberStr.c_str());
-}
-
-double CurrencyQuote::getDoubleData(std::string buffer, std::size_t offset, std::size_t& found) {
-    found = buffer.find_first_of(";,", offset);
-    std::string numberStr = buffer.substr(offset, found - offset);
-    found += 1;
-    return atof(numberStr.c_str());
-}
-
 int CurrencyQuote::openFile(std::string name) {
     std::ifstream fin(name);
     if (!fin.is_open()) {
@@ -290,13 +276,29 @@ int CurrencyQuote::openFile(std::string name) {
                 break;
             }
             std::string strData = buffer.substr(offset, found - offset);
-            numberStr = strData.substr(0, 4);
-            short _year = atoi(numberStr.c_str());
-            numberStr = strData.substr(4, 2);
-            char _month = atoi(numberStr.c_str());
-            numberStr = strData.substr(6, 2);
-            char _day = atoi(numberStr.c_str());
 
+            short _year = 0;
+            char _month = 0;
+            char _day = 0;
+
+            if(strData.size() == 8) {
+                numberStr = strData.substr(0, 4);
+                _year = atoi(numberStr.c_str());
+                numberStr = strData.substr(4, 2);
+                _month = atoi(numberStr.c_str());
+                numberStr = strData.substr(6, 2);
+                _day = atoi(numberStr.c_str());
+            } else
+            if(strData.size() == 10) {
+                numberStr = strData.substr(0, 4);
+                _year = atoi(numberStr.c_str());
+                numberStr = strData.substr(5, 2);
+                _month = atoi(numberStr.c_str());
+                numberStr = strData.substr(8, 2);
+                _day = atoi(numberStr.c_str());
+            }
+
+            //std::cout << "strData: " << strData << std::endl;
             //std::cout << (int)_year << "." << (int)_month << "." << (int)_day << std::endl;
 
             offset = found + 1;

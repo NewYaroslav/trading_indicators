@@ -42,7 +42,7 @@ int main()
         int stopPos = TestData.close.size() * stop; // конец данных
         std::cout << "Source: " << vPairName[n] << " data size: " << TestData.close.size() << std::endl;
 
-        Indicators::BollingerBands iBB(20, 2);
+        Indicators::BollingerBands iBB(200, 2);
 
         Drawing::Window iWindow(80);
 
@@ -50,7 +50,7 @@ int main()
         iForex.onePoint = 0.00001; // величина одного пункта
         iForex.setMoney(100000.0); // депозит в базовой валюте
         int leverage = 200; // кредитное плечо
-        double spread = 0.00003; // спред
+        double spread = 0.00005; // спред
         double lot = 50.0;
 
         int isBlock = 0; // флаг блокирования открытия новых сделок
@@ -58,6 +58,8 @@ int main()
         double takeProfit;
         double openPrice;
         int idOrder = 0; // id ордера
+
+        int moneySize = 0;
 
         for(int i = startPos + 1; i < stopPos; i++) {
             double& close = TestData.close[i];
@@ -76,18 +78,20 @@ int main()
             iForex.updata(high, low, close, spread);
 
             // открываем сделку buy, если
-            if(hour == 0 || hour == 23)
+            if(hour == 5 || hour == 6)
             if(close < iBB.bl && isBlock == 0) {
-                stopLoss = close - iForex.onePoint * 6;
-                takeProfit = close + iForex.onePoint * 16 + spread;
+                stopLoss = close - iForex.onePoint * 50;
+                //takeProfit = close + iForex.onePoint * 10 + spread;
+                takeProfit = close + iForex.onePoint * 150;
                 openPrice = close;
                 const int IS_BUY = 1;
                 iForex.setOrder(close, lot, leverage, IS_BUY, spread, stopLoss, takeProfit, idOrder);
                 isBlock = 1;
             } else
             if(close > iBB.tl && isBlock == 0) {
-                takeProfit = close - iForex.onePoint * 16;
-                stopLoss = close + iForex.onePoint * 6 + spread;
+                takeProfit = close - iForex.onePoint * 150;
+                //stopLoss = close + iForex.onePoint * 6 + spread;
+                stopLoss = close + iForex.onePoint * 50;
                 openPrice = close;
                 const int IS_SELL = -1;
                 iForex.setOrder(close, lot, leverage, IS_SELL, spread, stopLoss, takeProfit, idOrder);
@@ -98,17 +102,17 @@ int main()
                 if(iForex.getStateOrder(idOrder)) {
                     isBlock = 0; // если ордер исполнился, снимаем блокировку
                 } else {
-                    #if(0)
+                    #if(1)
                     if(iForex.getBuySellFlag(idOrder) == 1) {
-                        double newStopLoss = close - iForex.onePoint * 30;
-                        if(newStopLoss - iForex.onePoint * 20 > stopLoss) {
+                        double newStopLoss = close - iForex.onePoint * 5;
+                        if(newStopLoss - iForex.onePoint * 10 > stopLoss) {
                             stopLoss = newStopLoss;
                             iForex.setStopLoss(idOrder, stopLoss);
                         }
                     } else
                     if(iForex.getBuySellFlag(idOrder) == -1) {
-                        double newStopLoss = close + iForex.onePoint * 30 + spread;
-                        if(newStopLoss < stopLoss - iForex.onePoint * 20) {
+                        double newStopLoss = close + iForex.onePoint * 5 + spread;
+                        if(newStopLoss < stopLoss - iForex.onePoint * 10) {
                             stopLoss = newStopLoss;
                             iForex.setStopLoss(idOrder, stopLoss);
                         }
@@ -122,13 +126,16 @@ int main()
                 }
             }
 
-            if(hour == 0 || hour == 23)
-            if(1) {
-                std::vector<Drawing::CandlesType> data = iWindow.getCandlesType();
-                Drawing::viewCandleGraph("Source", data, 0);
+
+            if(hour == 5 || hour == 6)
+            //if(1) {
+            if(iForex.vMoney.size() != moneySize) {
+                //std::vector<Drawing::CandlesType> data = iWindow.getCandlesType();
+                //Drawing::viewCandleGraph("Source", data, 0);
 
                 std::vector<double> vNull;
                 Drawing::drawOscilloscope4xBeam("money"," money: ", iForex.vMoney, vNull, vNull, vNull, 1200, 400, 0);
+                moneySize = iForex.vMoney.size();
             }
 
         } // for

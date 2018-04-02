@@ -31,8 +31,8 @@
 class CurrencyQuote {
     private:
 
-    int getIntData(std::string buffer, std::size_t offset, std::size_t& found);
-    double getDoubleData(std::string buffer, std::size_t offset, std::size_t& found);
+    //int getIntData(std::string buffer, std::size_t offset, std::size_t& found);
+    //double getDoubleData(std::string buffer, std::size_t offset, std::size_t& found);
     void tickMinutes(int& year, int& month, int& day, int& hour, int& minutes);
     int getMinutes(int year, int month, int day, int hour, int minutes);
     int getDifference(int year, int month, int day, int hour, int minutes,

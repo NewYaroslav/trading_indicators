@@ -38,6 +38,7 @@ namespace Indicators {
     }
 
     double SMA::updata(double input) {
+        #if(0)
         data.push_back(input);
         if((int)data.size() > n) {
             data.erase(data.begin());
@@ -45,16 +46,35 @@ namespace Indicators {
         double sum = std::accumulate(data.begin(), data.end(), double(0));
         sum /= (double)data.size();
         return sum;
+        #else
+        // рекурентная формула
+        if((int)data.size() < n) {
+            data.push_back(input);
+            double sum = std::accumulate(data.begin(), data.end(), double(0));
+            sum /= (double)data.size();
+            if((int)data.size() == n) {
+                prevData = sum;
+            }
+            return sum;
+        } else {
+            prevData -= (data[0] - input) / (double)n;
+            data.push_back(input);
+            data.erase(data.begin());
+            return prevData;
+        }
+        #endif
     }
 
     EMA::EMA() {
         n = 10;
         a = 2.0/(double)(n + 1);
+        isInit = false;
     }
 
     EMA::EMA(int period) {
         n = period;
         a = 2.0/(double)(n + 1);
+        isInit = false;
     }
 
     double EMA::updata(double input) {
@@ -63,23 +83,24 @@ namespace Indicators {
             double sum = std::accumulate(data.begin(), data.end(), double(0));
             sum /= (double)n;
             prevOut = sum;
+            if((int)data.size() == n) isInit = true;
             return sum;
         }
         prevOut = a * input + (1.0 - a) * prevOut;
         return prevOut;
     }
 
-    WMA::WMA() {
+    MMA::MMA() {
         n = 10;
         a = 1.0/(double)n;
     }
 
-    WMA::WMA(int period) {
+    MMA::MMA(int period) {
         n = period;
         a = 1.0/(double)n;
     }
 
-    double WMA::updata(double input) {
+    double MMA::updata(double input) {
         if((int)data.size() < n) {
             data.push_back(input);
             double sum = std::accumulate(data.begin(), data.end(), double(0));
@@ -150,14 +171,14 @@ namespace Indicators {
 
     WRSI::WRSI() {
         n = 5;
-        iU = WMA(n);
-        iD = WMA(n);
+        iU = MMA(n);
+        iD = MMA(n);
     }
 
     WRSI::WRSI(int period) {
         n = period;
-        iU = WMA(n);
-        iD = WMA(n);
+        iU = MMA(n);
+        iD = MMA(n);
     }
 
     double WRSI::updata(double input) {
@@ -1271,4 +1292,453 @@ namespace Indicators {
         double stdDev = std::sqrt(sum / (double)(data.size() - 1));
         return stdDev;
     }
+
+    NewTimeFrame::NewTimeFrame() {};
+
+    NewTimeFrame::NewTimeFrame(ePeriod period) {
+        iPeriod = period;
+    }
+
+    int NewTimeFrame::updata(double in, int minutes) {
+        if(minutes % iPeriod == 0) {
+            out = in;
+            return 1;
+        }
+        return 0;
+    }
+
+    ATR::ATR() {n = 0; isInit = false;}
+
+    ATR::ATR(int period) {
+        isInit = false;
+        n = period;
+        iEmaAtr = EMA(period);
+    }
+
+    double ATR::updata(double high, double low, double close) {
+        if(isInit == false) {
+            isInit = true;
+            prevClose = close;
+            TRj = 0;
+            return 0;
+        }
+        TRj = std::max(std::abs(high - low),std::max(std::abs(low - prevClose),std::abs(high - prevClose)));
+        prevClose = close;
+        TRj = iEmaAtr.updata(TRj);
+        return TRj;
+    }
+
+    ADX::ADX() {isInit = false; n = 0;};
+
+    ADX::ADX(int period) {
+        iEmaP = EMA(period);
+        iEmaM = EMA(period);
+        iEmaAdx = EMA(period);
+        n = period;
+        isInit = false;
+    }
+
+    double ADX::updata(double high, double low, double close) {
+        if(isInit == false) {
+            isInit = true;
+            prevHigh = high;
+            prevLow = low;
+            prevClose = close;
+            adxj = 0;
+            return 0;
+        }
+        double pDMj;
+        double mDMj;
+        if(high > prevHigh) {
+            pDMj = high - prevHigh;
+        } else {
+            pDMj = 0;
+        }
+        if(low < prevLow) {
+            mDMj = prevLow - low;
+        } else {
+            mDMj = 0;
+        }
+        if(pDMj > mDMj) mDMj = 0;
+        else if(mDMj > pDMj) pDMj = 0;
+        else if(mDMj == pDMj) {pDMj = 0; mDMj = 0;};
+
+        double TRj = std::max(std::abs(high - low),std::max(std::abs(low - prevClose),std::abs(high - prevClose)));
+        double pSDI = 0;
+        double mSDI = 0;
+        if(TRj != 0) {
+            pSDI = pDMj / TRj;
+            mSDI = mDMj / TRj;
+        }
+        double pDIj = iEmaP.updata(pSDI);
+        double mDIj = iEmaM.updata(mSDI);
+        double sumDIj = pDIj + mDIj;
+        double DXj = sumDIj != 0 ? (std::abs(pDIj - mDIj) / (pDIj + mDIj)) * 100.0 : 0;
+        adxj = iEmaAdx.updata(DXj);
+        prevHigh = high;
+        prevLow = low;
+        prevClose = close;
+        return adxj;
+    }
+
+    VMA::VMA() {
+        n = 10;
+    }
+
+    VMA::VMA(int period) {
+        n = period;
+    }
+
+    double VMA::updata(double in, double vol) {
+        data.push_back(in);
+        w.push_back(vol);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+            w.erase(w.begin());
+        }
+        double sum = 0;
+        for(int i = 0; i < (int)data.size(); i++) {
+            sum += data[i] * w[i];
+        }
+        double sum2 = std::accumulate(w.begin(), w.end(), double(0));
+        sum /= sum2;
+        return sum;
+    }
+
+    DMA::DMA() {
+        n = 10;
+        a = 2.0/(double)(n + 1);
+        iEMA = EMA(n);
+        isInit = false;
+    }
+
+    DMA::DMA(int period) {
+        n = period;
+        a = 2.0/(double)(n + 1);
+        iEMA = EMA(n);
+        isInit = false;
+    }
+
+    double DMA::updata(double in) {
+        double ema = iEMA.updata(in);
+        if(isInit == false) {
+            if(iEMA.isInit == true) {
+                prevOut = ema;
+                isInit = true;
+                return ema;
+            } else {
+                return ema;
+            }
+        } else {
+            prevOut = a * ema + (1.0 - a) * prevOut;
+            return prevOut;
+        }
+        return ema;
+    }
+
+    TMA::TMA() {
+        n = 10;
+        a = 2.0/(double)(n + 1);
+        iDMA = DMA(n);
+        isInit = false;
+    }
+
+    TMA::TMA(int period) {
+        n = period;
+        a = 2.0/(double)(n + 1);
+        iDMA = DMA(n);
+        isInit = false;
+    }
+
+    double TMA::updata(double in) {
+        double dma = iDMA.updata(in);
+        if(isInit == false) {
+            if(iDMA.isInit == true) {
+                prevOut = dma;
+                isInit = true;
+                return dma;
+            } else {
+                return dma;
+            }
+        } else {
+            prevOut = a * dma + (1.0 - a) * prevOut;
+            return prevOut;
+        }
+        return dma;
+    }
+
+    WMA::WMA() {n = 10;};
+
+    WMA::WMA(int period) {n = period;};
+
+    double WMA::updata(double in) {
+        data.push_back(in);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+        }
+        double sum = 0;
+        for(int i = (int)data.size(); i > 0; i--) {
+            sum += data[i - 1] * i;
+        }
+        sum = (sum * 2.0) / ((double)data.size() * ((double)data.size() + 1.0));
+        return sum;
+    }
+
+    CA::CA() {n = 0; prevData = 0;};
+
+    double CA::updata(double in) {
+        n++;
+        prevData = prevData + (in - prevData) / n;
+        return prevData;
+    }
+
+    AMA::AMA() {n = 10; f = 2; s = 30;
+        isX2 = true;
+        iSD = StandardDeviation(n);
+        _K = 0.1;
+        filter = 0;
+        state = 0;
+    };
+
+    AMA::AMA(int n, int f, int s, int d, double K) {
+        AMA::n = n;
+        AMA::f = f;
+        AMA::s = s;
+        iSD = StandardDeviation(d);
+        _K = K;
+        isX2 = true;
+        filter = 0;
+        state = 0;
+    }
+
+    double AMA::updata(double in) {
+        data.push_back(in);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+            //
+            double _dir = std::abs(data[n - 1] - data[0]);
+            double _vol = 0;
+            for(int i = n - 1; i > 0; i--) {
+                _vol += std::abs(data[i] - data[i - 1]);
+            }
+            double er = _dir/_vol;
+            double _fastest = 2.0/(double)(f + 1);
+            double _slowest = 2.0/(double)(s + 1);
+            double _smooth = er * (_fastest - _slowest) + _slowest;
+            double _c = isX2 == true ? _smooth * _smooth : _smooth;
+
+            double _prevAMA = _c * in + (1.0 - _c) * prevAMA;
+
+            double di = _prevAMA - prevAMA;
+            prevAMA = _prevAMA;
+            filter = _K * iSD.updata(di);
+            return prevAMA;
+        } else {
+            filter = 0;
+            state = 0;
+            return in;
+        }
+    }
+
+    SMMA::SMMA() {
+        n = 10;
+    }
+
+    SMMA::SMMA(int n) {
+        SMMA::n = n;
+    }
+
+    double SMMA::updata(double in) {
+        if((int)data.size() < n) {
+            data.push_back(in);
+            double sma = std::accumulate(data.begin(), data.end(), double(0));
+            sma /= (double)(data.size());
+            if((int)data.size() == n) {
+                double smma1 = sma;
+                smma2 = (smma1 * (double)(n - 1) + in) / (double)n;
+                //isInit = true;
+                return smma2;
+            }
+            return sma;
+        } else {
+            double prevsum = smma2 * (double)n;
+            smma2 = (prevsum -  smma2 + in) / (double)n;
+            return smma2;
+        }
+        return 0;
+    }
+
+    FRAMA::FRAMA() {
+        n = 10;
+        isUseHighLow = true;
+        isFlexFrama = false;
+    };
+
+    FRAMA::FRAMA(int n) {
+        FRAMA::n = n;
+        isUseHighLow = true;
+        isFlexFrama = false;
+    }
+
+    FRAMA::FRAMA(int n, bool isUseHighLow) {
+        FRAMA::n = n;
+        FRAMA::isUseHighLow = isUseHighLow;
+        isFlexFrama = false;
+    }
+
+    double FRAMA::updata(double in, double high, double low) {
+        vdata.push_back(in);
+        vhigh.push_back(high);
+        vlow.push_back(low);
+        if((int)vdata.size() > n) {
+            vdata.erase(vdata.begin());
+            vhigh.erase(vhigh.begin());
+            vlow.erase(vlow.begin());
+        } else {
+            return in;
+        }
+        double N1, N2, N3;
+        if(isUseHighLow) {
+            double maxData1 = *std::max_element(vhigh.begin(), vhigh.begin() + n/2);
+            double maxData2 = *std::max_element(vhigh.begin() + n/2, vhigh.end());
+            double maxData3 = *std::max_element(vhigh.begin(), vhigh.end());
+            double minData1 = *std::min_element(vlow.begin(), vlow.begin() + n/2);
+            double minData2 = *std::min_element(vlow.begin() + n/2, vlow.end());
+            double minData3 = *std::min_element(vlow.begin(), vlow.end());
+            N1 = (maxData1 - minData1) / (double)(n/2);
+            N2 = (maxData2 - minData2) / (double)(n/2);
+            N3 = (maxData3 - minData3) / (double)n;
+        } else {
+            double maxData1 = *std::max_element(vdata.begin(), vdata.begin() + n/2);
+            double maxData2 = *std::max_element(vdata.begin() + n/2, vdata.end());
+            double maxData3 = *std::max_element(vdata.begin(), vdata.end());
+            double minData1 = *std::min_element(vdata.begin(), vdata.begin() + n/2);
+            double minData2 = *std::min_element(vdata.begin() + n/2, vdata.end());
+            double minData3 = *std::min_element(vdata.begin(), vdata.end());
+            N1 = (maxData1 - minData1) / (double)(n/2);
+            N2 = (maxData2 - minData2) / (double)(n/2);
+            N3 = (maxData3 - minData3) / (double)n;
+        }
+
+        double D = (log(N1 + N2) - log(N3)) / log(2.0);
+        if(isFlexFrama == true) {
+            coeff = -(3.89 * exp(D) - 9.57);
+        }
+        double A = exp(-coeff*(D - 1.0));
+        prevFRAMA = A * in + (1.0 - A) * prevFRAMA;
+        return prevFRAMA;
+    }
+
+    HMA::HMA() {
+        n = 10;
+        iWMAn = WMA(n);
+        iWMAn2 = WMA(n/2);
+        iWMAsqrtn = WMA(sqrt(n));
+    };
+
+    HMA::HMA(int n) {
+        HMA::n = n;
+        iWMAn = WMA(n);
+        iWMAn2 = WMA(n/2);
+        iWMAsqrtn = WMA(sqrt(n));
+    };
+
+    double HMA::updata(double in) {
+        double wmaN = iWMAn.updata(in);
+        double wmaN2 = iWMAn2.updata(in);
+        return  iWMAsqrtn.updata(2.0 * wmaN2 - wmaN);
+    }
+
+    VIDYA::VIDYA() {
+        n = 10;
+        isStart = false;
+        F = 2.0 / (double)(n + 1.0);
+    };
+
+    VIDYA::VIDYA(int n) {
+        VIDYA::n = n;
+        isStart = false;
+        F = 2.0 / (double)(n + 1.0);
+    }
+
+    double VIDYA::updata(double in) {
+        if(isStart == false) {
+            prevInput = in;
+            prevVIDYA = in;
+            isStart = true;
+            return in;
+        }
+        double u = 0, d = 0;
+        if (prevInput < in) {
+            u = in - prevInput;
+            d = 0.0;
+        } else
+        if (prevInput > in) {
+            d = prevInput - in;
+            u = 0.0;
+        }
+        u = iSumUp.updata(u);
+        d = iSumDn.updata(d);
+        double CMO = (u - d) / (u + d);
+        prevVIDYA = in * F * abs(CMO + prevVIDYA * (1.0 - (F * abs(CMO))));
+        prevInput = in;
+        return prevVIDYA;
+    }
+
+    TrendFlatIndicator::TrendFlatIndicator() {};
+
+    TrendFlatIndicator::TrendFlatIndicator(int _n, int nFilter, double dX) {
+        iLastExtrema = LastExtrema(2,_n);
+        iEMA = EMA(nFilter);
+        TrendFlatIndicator::dX = dX;
+    }
+
+    double TrendFlatIndicator::updata(double in) {
+        iLastExtrema.updata(in);
+        if(iLastExtrema.vExtremaUp.size() == 2 && iLastExtrema.vExtremaDown.size() == 2) {
+            double& maxData = iLastExtrema.vExtremaUp[1];
+            double& minData = iLastExtrema.vExtremaDown[1];
+            if(in > maxData && in > minData) {
+                trendData += dX;
+            } else
+            if(in < maxData && in < minData) {
+                trendData -= dX;
+            } else
+            if(maxData > iLastExtrema.vExtremaUp[0] && in > maxData) {
+                if(minData > iLastExtrema.vExtremaDown[0]) {
+                    trendData += dX;
+                } else {
+                    trendData = 0.0;
+                    if(in > maxData) {
+                        trendData += dX;
+                    }
+                }
+            } else
+            if(maxData < iLastExtrema.vExtremaUp[0]) {
+                if(minData < iLastExtrema.vExtremaDown[0] && in < minData) {
+                    trendData -= dX;
+                } else {
+                    trendData = 0.0;
+                    if(in < minData) {
+                        trendData -= dX;
+                    }
+                }
+            } else {
+                trendData = 0.0;
+                if(in > maxData) {
+                    trendData = dX;
+                } else
+                if(in < minData) {
+                    trendData -= dX;
+                }
+            }
+        } else {
+            trendData = 0.0;
+        }
+        if(trendData > 1.0) trendData = 1.0;
+        else if(trendData < -1.0) trendData = -1.0;
+        double out = iEMA.updata(trendData);
+        return out;
+    }
+
 }

@@ -54,6 +54,7 @@ namespace Indicators {
         private:
         int n;
         std::vector<double> data;
+        double prevData;
         public:
         /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
         */
@@ -67,6 +68,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
     };
 
     /** @brief Класс экспоненциальной скользящей средней
@@ -92,13 +94,15 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
+        bool isInit;
     };
 
-    /** @brief Класс взвешенной скользящей средней
+    /** @brief Класс модифицированной скользящей средней
         @version 1.0
         @date 08.01.2018
     */
-    class WMA {
+    class MMA {
         private:
         int n;
         double a;
@@ -107,16 +111,17 @@ namespace Indicators {
         public:
         /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
         */
-        WMA();
+        MMA();
         /** @brief Инициализация индикатора с заданным периодом
             @param[in] period период индикатора
         */
-        WMA(int period);
+        MMA(int period);
         /** @brief Обновить входные данные индикатора
             @param[in] input входные данные индикатора
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
     };
 
     /** @brief Простая скользящая медиана
@@ -140,6 +145,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
     };
 
     /** @brief Класс индекса относительной силы
@@ -166,6 +172,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
     };
 
     /** @brief Класс индекса относительной силы с использованием WMA вместо SMA
@@ -174,8 +181,8 @@ namespace Indicators {
     */
     class WRSI {
         private:
-        WMA iU;
-        WMA iD;
+        MMA iU;
+        MMA iD;
         int n;
         double prevInput;
         public:
@@ -192,6 +199,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        int getPeriod() {return n;};
     };
 
     /** @brief Класс индекса относительной силы с использованием SMM вместо SMA
@@ -245,6 +253,8 @@ namespace Indicators {
         double tl = 0; ///< верхняя полоса боллинджера
         double bl = 0; ///< нижняя полоса боллинджера
         double ml = 0; ///< простая скользящая средняя
+        int getPeriod() {return n;};
+        double getStdDevFactor() {return d;};
     };
 
     /** @brief Расчитать стандартное отклонение
@@ -650,6 +660,8 @@ namespace Indicators {
         int state;
     };
 
+    /** @brief Стандартное отклонение
+    */
     class StandardDeviation {
         private:
         int n;
@@ -669,6 +681,259 @@ namespace Indicators {
         double updata(double input);
     };
 
+    /** @brief Новый тайфмрейм
+    */
+    class NewTimeFrame {
+        public:
+        enum ePeriod {
+            T5 = 5,
+            T10 = 10,
+            T15 = 15,
+            T30 = 30,
+            T60 = 60
+        };
+        ePeriod iPeriod;
+        NewTimeFrame();
+        /** @brief Инициализация индикатора
+            @param[in] period желаемый таймфрейм
+        */
+        NewTimeFrame(ePeriod period);
+        /** @brief Обновить данные индикатора
+            Функция обновляет переменную out и возвращает 1 в случае появления
+            нового бара нового тайфмрейма.
+            Переменная out содержит последний бар нового тайфмерйма.
+            @param[in] in цена
+            @param[in] minutes минуты
+            @return вернет 1 в случае появления нового бара нового таймфрейма.
+        */
+        int updata(double in, int minutes);
+        double out;
+    };
+
+    class ATR {
+        private:
+        bool isInit = false;
+        EMA iEmaAtr;
+        int n = 0;
+        double prevClose;
+        public:
+        ATR();
+        ATR(int period);
+        double updata(double high, double low, double close);
+        double TRj = 0;
+    };
+
+    class ADX {
+        private:
+        bool isInit = false;
+        EMA iEmaP;
+        EMA iEmaM;
+        EMA iEmaAdx;
+        int n = 0;
+        double prevHigh;
+        double prevLow;
+        double prevClose;
+        public:
+        ADX();
+        ADX(int period);
+        double updata(double high, double low, double close);
+        double adxj;
+    };
+
+    class VMA {
+        private:
+        int n;
+        std::vector<double> data;
+        std::vector<double> w;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
+        */
+        VMA();
+        /** @brief Инициализация индикатора с заданным периодом
+            @param[in] period период индикатора
+        */
+        VMA(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] in входные данные индикатора
+            @return значение индикатора
+        */
+        double updata(double in, double vol);
+        int getPeriod() {return n;};
+    };
+
+    class DMA {
+        private:
+        EMA iEMA;
+        int n;
+        double a;
+        double prevOut;
+        std::vector<double> data;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
+        */
+        DMA();
+        /** @brief Инициализация индикатора с заданным периодом
+            @param[in] period период индикатора
+        */
+        DMA(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] in входные данные индикатора
+            @return значение индикатора
+        */
+        double updata(double in);
+        int getPeriod() {return n;};
+        bool isInit;
+    };
+
+    class TMA {
+        private:
+        DMA iDMA;
+        int n;
+        double a;
+        double prevOut;
+        std::vector<double> data;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
+        */
+        TMA();
+        /** @brief Инициализация индикатора с заданным периодом
+            @param[in] period период индикатора
+        */
+        TMA(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] in входные данные индикатора
+            @return значение индикатора
+        */
+        double updata(double in);
+        int getPeriod() {return n;};
+        bool isInit;
+    };
+
+    /** @brief Класс взвешенной скользящей средней
+        @version 1.0
+        @date 08.01.2018
+    */
+    class WMA {
+        private:
+        int n;
+        std::vector<double> data;
+        public:
+        /** @brief Инициализация индикатора со стандартными настройками (период равен 10)
+        */
+        WMA();
+        /** @brief Инициализация индикатора с заданным периодом
+            @param[in] period период индикатора
+        */
+        WMA(int period);
+        /** @brief Обновить входные данные индикатора
+            @param[in] input входные данные индикатора
+            @return значение индикатора
+        */
+        double updata(double in);
+        int getPeriod() {return n;};
+    };
+
+    class CA {
+        private:
+        int n;
+        double prevData;
+        public:
+        CA();
+        double updata(double in);
+        int getPeriod() {return n;};
+    };
+
+    class AMA {
+        private:
+        StandardDeviation iSD;
+        std::vector<double> data;
+        int n, s, f;
+        double _K;
+        double prevAMA;
+        bool isX2;
+        public:
+        AMA();
+        AMA(int n, int f, int s, int d, double K);
+        double updata(double in);
+        double filter;
+        int state;
+        int getPeriod() {return n;};
+    };
+
+    class SMMA {
+        private:
+        std::vector<double> data;
+        int n;
+        //bool isInit;
+        double smma2;
+        public:
+        SMMA();
+        SMMA(int n);
+        double updata(double in);
+        int getPeriod() {return n;};
+    };
+
+    // Фрактальная Адаптивная Скользящая Средняя
+    class FRAMA {
+        private:
+        int n;
+        double coeff = 4.6;
+        std::vector<double> vdata;
+        std::vector<double> vhigh;
+        std::vector<double> vlow;
+        double prevFRAMA;
+        bool isUseHighLow;
+        public:
+        bool isFlexFrama; ///< модицифированная FlexFrama
+        FRAMA();
+        FRAMA(int n);
+        FRAMA(int n, bool isUseHighLow);
+        double updata(double in, double high, double low);
+        int getPeriod() {return n;};
+    };
+
+    // скользящая средняя Хала
+    class HMA {
+        private:
+        int n;
+        WMA iWMAn;
+        WMA iWMAn2;
+        WMA iWMAsqrtn;
+        public:
+        HMA();
+        HMA(int n);
+        double updata(double in);
+        int getPeriod() {return n;};
+    };
+
+    //
+    class VIDYA {
+        private:
+        double prevInput;
+        double prevVIDYA;
+        double F;
+        SMA iSumUp;
+        SMA iSumDn;
+        int n;
+        bool isStart;
+        public:
+        VIDYA();
+        VIDYA(int n);
+        double updata(double in);
+        int getPeriod() {return n;};
+    };
+
+    class TrendFlatIndicator {
+        private:
+        LastExtrema iLastExtrema;
+        EMA iEMA;
+        double dX;
+        double trendData = 0.0;
+        public:
+        TrendFlatIndicator();
+        TrendFlatIndicator(int _n, int nFilter, double dX);
+        double updata(double in);
+    };
 }
 
 #endif // TRADINGINDICATORS_HPP_INCLUDED

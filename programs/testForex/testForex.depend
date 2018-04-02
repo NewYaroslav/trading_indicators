@@ -59,20 +59,20 @@
 
 1513643516 d:\yar\_repoz\fann\src\include\fann_io.h
 
-1516564005 source:d:\yar\_repoz\trading_indicators\src\normalizationdata.cpp
+1519622101 source:d:\yar\_repoz\trading_indicators\src\normalizationdata.cpp
 	"NormalizationData.hpp"
 
-1517288126 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
+1519622080 d:\yar\_repoz\trading_indicators\src\normalizationdata.hpp
 	<vector>
 	<algorithm>
 	"TradingIndicators.hpp"
 
-1517933788 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
+1519730616 d:\yar\_repoz\trading_indicators\src\tradingindicators.hpp
 	<vector>
 	<numeric>
 	<algorithm>
 
-1517666106 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
+1519691996 source:d:\yar\_repoz\trading_indicators\src\readingdata.cpp
 	"ReadingData.hpp"
 	<string.h>
 	<stdlib.h>
@@ -100,11 +100,11 @@
 1515964507 d:\yar\_repoz\trading_indicators\src\scaling.hpp
 	<vector>
 
-1517672359 source:d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.cpp
+1519754036 source:d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.cpp
 	"StrategyEffectiveness.hpp"
 	<cmath>
 
-1517672401 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
+1519753853 d:\yar\_repoz\trading_indicators\src\strategyeffectiveness.hpp
 	<vector>
 
 1518794093 source:d:\yar\_repoz\trading_indicators\src\forextesting.cpp
@@ -114,13 +114,13 @@
 1517788995 d:\yar\_repoz\trading_indicators\src\forextesting.hpp
 	<vector>
 
-1517935364 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
+1518944482 source:d:\yar\_repoz\trading_indicators\src\tradingindicators.cpp
 	"TradingIndicators.hpp"
 	"NormalizationData.hpp"
 	<iostream>
 	"Drawing.hpp"
 
-1518796090 source:d:\yar\_repoz\trading_indicators\programs\testforex\main.cpp
+1519857426 source:d:\yar\_repoz\trading_indicators\programs\testforex\main.cpp
 	<iostream>
 	"TradingIndicators.hpp"
 	"ReadingData.hpp"

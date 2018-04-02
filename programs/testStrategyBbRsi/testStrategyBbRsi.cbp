@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="testStrategyBbRsi" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/testStrategyBbRsi" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
+				</Compiler>
+				<Linker>
+					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/testStrategyBbRsi" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++11" />
+					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add directory="../../src" />
+					<Add directory="../../../fann/src" />
+					<Add directory="../../../fann/src/include" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="../../../fann/src/floatfann.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../src/Drawing.cpp" />
+		<Unit filename="../../src/Drawing.hpp" />
+		<Unit filename="../../src/FannFunctions.cpp" />
+		<Unit filename="../../src/FannFunctions.hpp" />
+		<Unit filename="../../src/ForexSimulator.cpp" />
+		<Unit filename="../../src/ForexSimulator.hpp" />
+		<Unit filename="../../src/ForexTesting.cpp" />
+		<Unit filename="../../src/ForexTesting.hpp" />
+		<Unit filename="../../src/KohonenSelfOrganizingFeatureMaps.cpp" />
+		<Unit filename="../../src/KohonenSelfOrganizingFeatureMaps.hpp" />
+		<Unit filename="../../src/Martingale.cpp" />
+		<Unit filename="../../src/Martingale.hpp" />
+		<Unit filename="../../src/NormalizationData.cpp" />
+		<Unit filename="../../src/NormalizationData.hpp" />
+		<Unit filename="../../src/ReadingData.cpp" />
+		<Unit filename="../../src/ReadingData.hpp" />
+		<Unit filename="../../src/Scaling.cpp" />
+		<Unit filename="../../src/Scaling.hpp" />
+		<Unit filename="../../src/StrategyEffectiveness.cpp" />
+		<Unit filename="../../src/StrategyEffectiveness.hpp" />
+		<Unit filename="../../src/TradingIndicators.cpp" />
+		<Unit filename="../../src/TradingIndicators.hpp" />
+		<Unit filename="../../src/Training.cpp" />
+		<Unit filename="../../src/Training.hpp" />
+		<Unit filename="../../src/WaveletTransform.cpp" />
+		<Unit filename="../../src/WaveletTransform.hpp" />
+		<Unit filename="../../src/rnd.cpp" />
+		<Unit filename="../../src/rnd.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

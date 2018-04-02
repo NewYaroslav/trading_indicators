@@ -227,6 +227,9 @@ namespace Normalization {
 
     int getMax(std::vector<double>& input, int pos);
 
+    std::vector<double> DirectTransform(std::vector<double> SourceList);
+    std::vector<double> InverseTransform(std::vector<double> SourceList);
+    void FFTAnalysis(std::vector<double>& AVal, std::vector<double>& FTvl);
 }
 
 #endif // NORMALIZATIONDATA_HPP_INCLUDED

@@ -63,6 +63,8 @@ namespace Drawing {
         void setArrowUp();
         void setArrowDown();
         void setArrow(char arrow);
+        void setCircle(int state);
+
         // функции для обновления данных
         void updataIndicator(double data, int pos);
         void updataArrow(char arrow);
@@ -72,6 +74,7 @@ namespace Drawing {
         double high;
         double low;
         char isArrow = 0;
+        char isCirc = 0;
         std::vector<double> indicator;
     };
 
@@ -89,6 +92,7 @@ namespace Drawing {
         void updata(double open, double high, double low, double close);
         void updataLast(double open, double high, double low, double close);
         void setArrow(char arrow);
+        void setCircle(int state, int pos);
         void setIndicator(double dataInd);
         void updateIndicator(double dataInd, int pos);
         void getCandlesType(std::vector<CandlesType>& out);
@@ -138,6 +142,9 @@ namespace Drawing {
     std::vector<double> in1, std::vector<double> in2, std::vector<double> in3, std::vector<double> in4,
     int width, int height, int mask);
 
+
+    void drawCandleGraph(cv::Mat& output, int x, int y, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, std::vector<cv::Scalar>& lineColor, int isAutoCircl);
+    void viewCandleGraph2(std::string name, Window& iWind, int width, int height);
 }
 
 #endif // DRAWING_HPP_INCLUDED

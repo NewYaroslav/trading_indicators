@@ -65,11 +65,10 @@ class StrategyEffectiveness {
     double getProfitLoss();
     double getAverageGeometricYield();
     double getCoeffSharpe();
+    double getCoeffSortino();
     double getBalanceMaxCoeffSharpe();
     double getEff();
-
     double getAverageGeometricYieldMx();
-
     int getGoodHour();
     // коэффициент безопасности торговой системы
     double getTSSF();
