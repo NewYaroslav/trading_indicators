@@ -96,7 +96,7 @@ int main() {
         std::cout << "eff: " << iEff.getEff()
             << " num: " << (iEff.win + iEff.loss) << std::endl;
         std::cout << "eff all: " << iEffAll.getEff()
-            << " num: " << (iEff.win + iEff.loss) << std::endl;
+            << " num: " << (iEffAll.win + iEffAll.loss) << std::endl;
     } // for n
 
     return 0;
