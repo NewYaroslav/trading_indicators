@@ -225,6 +225,8 @@ namespace Normalization {
     */
     std::vector<double> smoothOutData(std::vector<double>& input, int period);
 
+    std::vector<double> smoothDataLoop(std::vector<double>& input, int period);
+
     int getMax(std::vector<double>& input, int pos);
 
     std::vector<double> DirectTransform(std::vector<double> SourceList);

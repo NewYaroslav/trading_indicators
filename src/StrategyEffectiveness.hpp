@@ -39,6 +39,7 @@
 */
 class StrategyEffectiveness {
     public:
+    int expTime;
     int hwin[24];
     int hloss[24];
     int mwin[1440];
@@ -53,7 +54,21 @@ class StrategyEffectiveness {
     double grossprofit = 0;
     double grossloss = 0;
     std::vector<double> vMoney;
+    std::vector<int> vState;
+    std::vector<double> vRate;
+    std::vector<double> vTick;
     StrategyEffectiveness();
+    /** @brief обновить значения баланса
+        Данную функцию необходимо вызывать перед функциями
+        setDelayWin и setDelayLoss
+    */
+    void updata();
+    /** @brief поставить удачную сделку c задержкой
+    */
+    void setDelayWin();
+    /** @brief поставить неудачную сделку c задержкой
+    */
+    void setDelayLoss();
     void setWin();
     void setLoss();
     void setWin(int hour);

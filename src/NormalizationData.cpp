@@ -61,6 +61,25 @@ namespace Normalization {
         return output;
     }
 
+    std::vector<double> smoothDataLoop(std::vector<double>& input, int period) {
+        Indicators::SMA iSMA(period);
+        std::vector<double> data;
+        data.insert(data.end(), input.begin(), input.end());
+        data.insert(data.end(), input.begin(), input.end());
+        data.insert(data.end(), input.begin(), input.end());
+        std::vector<double> _output(data.size());
+        std::vector<double> output(input.size());
+        for(size_t i = 0; i < data.size(); i++) {
+            _output[i] = iSMA.updata(data[i]);
+        }
+        size_t stop = input.size() * 2;
+        for(size_t i = input.size(); i < stop; i++) {
+            output[i - input.size()] = _output[i + period - 1];
+        }
+
+        return output;
+    }
+
     int getMax(std::vector<double>& input, int pos) {
         int num = 0;
         for(size_t i = 1; i < input.size() - 1; i++) {

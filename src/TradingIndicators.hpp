@@ -68,6 +68,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        double test(double input);
         int getPeriod() {return n;};
     };
 
@@ -121,6 +122,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        double test(double input);
         int getPeriod() {return n;};
     };
 
@@ -199,6 +201,7 @@ namespace Indicators {
             @return значение индикатора
         */
         double updata(double input);
+        double test(double input);
         int getPeriod() {return n;};
     };
 
@@ -250,6 +253,7 @@ namespace Indicators {
             @param[in] input входные данные индикатора
         */
         void updata(double input);
+        void test(double input);
         double tl = 0; ///< верхн€€ полоса боллинджера
         double bl = 0; ///< нижн€€ полоса боллинджера
         double ml = 0; ///< проста€ скольз€ща€ средн€€

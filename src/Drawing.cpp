@@ -490,4 +490,241 @@ namespace Drawing {
         cv::waitKey(10);
         output.release();
     }
+
+    void drawCandleGraphV2(cv::Mat& output, int x, int y, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, std::vector<cv::Scalar>& lineColor, int isAutoCircl) {
+        const double windowSize = 0.7;
+
+        double maxData = std::numeric_limits<double>::min(), minData = std::numeric_limits<double>::max();
+        for(int i = 0; i < (int)in.size(); i++) {
+            if (maxData < in[i].high) { maxData = in[i].high;}
+            if (minData > in[i].low) {minData = in[i].low;}
+            if(in[i].indicator.size() > 0) {
+                for(int k = 0; k < (int)in[i].indicator.size(); k++) {
+                    if (maxData < in[i].indicator[k]) {maxData = in[i].indicator[k];}
+                    if (minData > in[i].indicator[k]) {minData = in[i].indicator[k];}
+                }
+            }
+        }
+        //printf("min max: %f %f\n", minData, maxData);
+        double amplitudeData = maxData - minData;
+        double aver = (amplitudeData / 2.0) + minData; // среднее значение
+        double param = std::max(std::abs(maxData - aver),std::abs(aver - minData));// (std::abs(maxData - aver) > std::abs(aver - minData)) ? std::abs(maxData - aver)  : std::abs(aver - minData);
+        double sacle = 0.6 * ((double)((double)height/2.0)/(double)param);
+
+        double step = ((double) width * windowSize) / (double) in.size();
+        //int numCandles = 0;
+        double offset = 0;
+        double heightDiv2 = (height/2);
+
+        for(int i = 0; i < (int)in.size(); i++) {
+            offset+= step;
+
+            double close = heightDiv2 - ((in[i].close - aver) * sacle);
+            double open = heightDiv2 - ((in[i].open - aver) * sacle);
+            double high = heightDiv2 - ((in[i].high - aver) * sacle);
+            double low = heightDiv2 - ((in[i].low - aver) * sacle);
+
+            if (in[i].open < in[i].close) {
+                cv::line(output, cv::Point(x + offset, y + 0), cv::Point(x + offset, y + height- 1), backgroundColor);
+                cv::line(output, cv::Point(x + offset, y + high), cv::Point(x + offset, y + low), cv::Scalar(0,255,0));
+                //cv::line(output, cv::Point(offset, open), cv::Point(offset, close), cv::Scalar(0,255,0), 4.0, 4); // step/4.0
+                cv::rectangle(output, cv::Point(x + offset - step/4.0, y + close), cv::Point(x + offset + step/4.0, y + open), cv::Scalar(0,255,0), CV_FILLED);
+            } else
+            if (in[i].open > in[i].close) {
+                cv::line(output, cv::Point(x + offset, y + 0), cv::Point(x + offset, y + height- 1), backgroundColor);
+                cv::line(output, cv::Point(x + offset, y + high), cv::Point(x + offset, y + low), cv::Scalar(0,0,255));
+                //cv::line(output, cv::Point(offset, open), cv::Point(offset, close), cv::Scalar(0,0,255), 4.0, 4);
+                cv::rectangle(output, cv::Point(x + offset - step/4.0, y + open), cv::Point(x + offset + step/4.0, y + close), cv::Scalar(0,0,255), CV_FILLED);
+            } else {
+                cv::line(output, cv::Point(x + offset, y + 0), cv::Point(x + offset, y +  height- 1), backgroundColor);
+                cv::line(output, cv::Point(x + offset, y + high), cv::Point(x + offset, y + low), cv::Scalar(255,255,255));
+                //cv::line(output, cv::Point(offset, open), cv::Point(offset, close), cv::Scalar(255,255,255), 4.0, 4);
+                cv::rectangle(output, cv::Point(x + offset - step/4.0, y + open), cv::Point(x + offset + step/4.0, y + close), cv::Scalar(255,255,255), CV_FILLED);
+            }
+
+        } // for  i
+
+        offset = 0;
+
+        for(int i = 0; i < (int)in.size(); i++) {
+            offset+= step;
+            double high = heightDiv2 - ((in[i].high - aver) * sacle);
+            double low = heightDiv2 - ((in[i].low - aver) * sacle);
+            if(in[i].indicator.size() > 0) {
+                if(i + 1 < (int)in.size()) {
+                    for(int k = 0; k < (int)in[i].indicator.size(); k++) {
+                        if(k >= (int)in[i + 1].indicator.size()) break;
+                        double indic = heightDiv2 - ((in[i].indicator[k] - aver) * sacle);
+                        double indic2 = heightDiv2 - ((in[i + 1].indicator[k] - aver) * sacle);
+                        if(k < (int)lineColor.size()) {
+                            cv::line(output, cv::Point(x + offset, y + indic), cv::Point(x + offset + step, y + indic2), lineColor[k]);
+                        } else {
+                            cv::line(output, cv::Point(x + offset, y + indic), cv::Point(x + offset + step, y + indic2), cv::Scalar(255,0,0));
+                        }
+                    }
+                }
+            }
+        }
+
+        offset = 0;
+
+        for(int i = 0; i < (int)in.size(); i++) {
+            offset+= step;
+            double high = heightDiv2 - ((in[i].high - aver) * sacle);
+            double low = heightDiv2 - ((in[i].low - aver) * sacle);
+            if (in[i].isArrow == 1) {
+                //cv::arrowedLine(output, cv::Point(x + offset, y + low + 0.15*height), cv::Point(x + offset + 0.1*height, y + low + 0.05*height), cv::Scalar(0,255,0), 1, 8, 0, 0.4);
+                //cv::arrowedLine(output, cv::Point(x + offset, y + low + 0.15*height), cv::Point(x + offset + 0.05*height, y + low + 0.1*height), cv::Scalar(0,255,0), 1, 8, 0, 0.5);
+                std::vector<cv::Point> point;
+                    point.push_back(cv::Point(x + offset,y + low + 0.05*height));  //point1
+                    point.push_back(cv::Point(x + offset + 0.025*height, y + low + 0.1*height));  //point2
+                    point.push_back(cv::Point(x + offset - 0.025*height, y + low + 0.1*height));  //point3
+                cv::fillConvexPoly(output, point, cv::Scalar(0,255,0), CV_AA, 0);
+            } else if (in[i].isArrow == -1) {
+                //cv::arrowedLine(output, cv::Point(x + offset, y + high - 0.15*height), cv::Point(x + offset + 0.1*height, y + high - 0.05*height), cv::Scalar(0,0,255), 1, 8, 0, 0.4);
+                //cv::arrowedLine(output, cv::Point(x + offset, y + high - 0.15*height), cv::Point(x + offset + 0.05*height, y + high - 0.1*height), cv::Scalar(0,0,255), 1, 8, 0, 0.5);
+                std::vector<cv::Point> point;
+                    point.push_back(cv::Point(x + offset,y + high - 0.05*height));  //point1
+                    point.push_back(cv::Point(x + offset + 0.025*height, y + high - 0.1*height));  //point2
+                    point.push_back(cv::Point(x + offset - 0.025*height, y + high - 0.1*height));  //point3
+                cv::fillConvexPoly(output, point, cv::Scalar(0,0,255), CV_AA, 0);
+            }
+        }
+
+        const double CIRC_R = 0.07;
+        offset = 0;
+        if(isAutoCircl == 0) {
+            for(int i = 0; i < (int)in.size(); i++) {
+                offset+= step;
+                double high = heightDiv2 - ((in[i].high - aver) * sacle);
+                double low = heightDiv2 - ((in[i].low - aver) * sacle);
+                if (in[i].isCirc == 1) {
+                    cv::circle(output,cv::Point(x + offset, y + low + 0.1*height),CIRC_R*height,cv::Scalar(0,255,0),1);
+                } else
+                if (in[i].isCirc == 2) {
+                    cv::circle(output,cv::Point(x + offset, y + low + 0.1*height),CIRC_R*height,cv::Scalar(0,0,255),1);
+                } else
+                if (in[i].isCirc == -1) {
+                    cv::circle(output,cv::Point(x + offset, y + high - 0.1*height),CIRC_R*height,cv::Scalar(0,255,0),1);
+                } else
+                if (in[i].isCirc == -2) {
+                    cv::circle(output,cv::Point(x + offset, y + high - 0.1*height),CIRC_R*height,cv::Scalar(0,0,255),1);
+                }
+            }
+        } else {
+            for(int i = 0; i < (int)in.size(); i++) {
+                offset+= step;
+                double high = heightDiv2 - ((in[i].high - aver) * sacle);
+                double low = heightDiv2 - ((in[i].low - aver) * sacle);
+                if(i < (int)in.size() - isAutoCircl)
+                if (in[i].isArrow == 1 && in[i].close < in[i + isAutoCircl].close) {
+                    //cv::circle(output,cv::Point(x + offset, y + low + 0.1*height),CIRC_R*height,cv::Scalar(0,255,0),1);
+                    cv::line(output, cv::Point(x + offset - 0.03*height, y + low + 0.12*height), cv::Point(x + offset, y + low + 0.18*height), cv::Scalar(0,255,0));
+                    cv::line(output, cv::Point(x + offset + 0.03*height, y + low + 0.14*height), cv::Point(x + offset, y + low + 0.18*height), cv::Scalar(0,255,0));
+                } else
+                if (in[i].isArrow == 1 && in[i].close > in[i + isAutoCircl].close) {
+                    //cv::circle(output,cv::Point(x + offset, y + low + 0.1*height),CIRC_R*height,cv::Scalar(0,0,255),1);
+                    cv::line(output, cv::Point(x + offset - 0.03*height, y + low + 0.12*height), cv::Point(x + offset + 0.03*height, y + low + 0.18*height), cv::Scalar(0,0,255));
+                    cv::line(output, cv::Point(x + offset + 0.03*height, y + low + 0.12*height), cv::Point(x + offset - 0.03*height, y + low + 0.18*height), cv::Scalar(0,0,255));
+                } else
+                if (in[i].isArrow == -1 && in[i].close > in[i + isAutoCircl].close) {
+                    //cv::circle(output,cv::Point(x + offset, y + high - 0.1*height),CIRC_R*height,cv::Scalar(0,255,0),1);
+                    cv::line(output, cv::Point(x + offset - 0.03*height, y + high - 0.18*height), cv::Point(x + offset, y + high - 0.12*height), cv::Scalar(0,255,0));
+                    cv::line(output, cv::Point(x + offset + 0.03*height, y + high - 0.16*height), cv::Point(x + offset, y + high - 0.12*height), cv::Scalar(0,255,0));
+                } else
+                if (in[i].isArrow == -1 && in[i].close < in[i + isAutoCircl].close) {
+                    //cv::circle(output,cv::Point(x + offset, y + high - 0.1*height),CIRC_R*height,cv::Scalar(0,0,255),1);
+                    cv::line(output, cv::Point(x + offset - 0.03*height, y + high - 0.12*height), cv::Point(x + offset + 0.03*height, y + high - 0.18*height), cv::Scalar(0,0,255));
+                    cv::line(output, cv::Point(x + offset + 0.03*height, y + high - 0.12*height), cv::Point(x + offset - 0.03*height, y + high - 0.18*height), cv::Scalar(0,0,255));
+                }
+            }
+        }
+    }
+
+    void viewCandleGraphV2(std::string name, Window& iWind, int width, int height) {
+        cv::Mat output(cv::Size(width, height), CV_8UC3);
+        output.setTo(cv::Scalar(0,0,0));
+        std::vector<CandlesType> iCT = iWind.getCandlesType();
+        std::vector<cv::Scalar> vLineColoer(10);
+        vLineColoer[0] = cv::Scalar(255,0,0); vLineColoer[1] = cv::Scalar(255,150,0);
+        vLineColoer[2] = cv::Scalar(150,255,0); vLineColoer[3] = cv::Scalar(0,255,0);
+        vLineColoer[4] = cv::Scalar(0,255,150); vLineColoer[5] = cv::Scalar(0,150,255);
+        vLineColoer[6] = cv::Scalar(0,0,255); vLineColoer[7] = cv::Scalar(50,50,255);
+        vLineColoer[8] = cv::Scalar(150,150,255); vLineColoer[9] = cv::Scalar(255,255,255);
+        drawCandleGraphV2(output,0,0,width, height,iCT,cv::Scalar(10,10,10),vLineColoer,3);
+
+        cv::imshow(name, output);
+        cv::waitKey(10);
+        output.release();
+    }
+
+    void drawDepositGraphV2(cv::Mat& output, int x, int y, int width, int height, std::vector<double>& in, cv::Scalar backgroundColor, cv::Scalar lineColor, double th) {
+        const double windowSize = 0.95;
+
+        cv::rectangle(output,
+                        cv::Point(x, y),
+                        cv::Point(x + width - 1, y + height - 1),
+                        backgroundColor, CV_FILLED);
+
+
+
+        double maxData = *std::max_element(in.begin(), in.end());
+        double minData = *std::min_element(in.begin(), in.end());
+
+        double amplitudeData = maxData - minData;
+        double aver = (amplitudeData / 2.0) + minData; // среднее значение
+        double param = std::max(std::abs(maxData - aver),std::abs(aver - minData));
+        double sacle = 0.7 * ((double)((double)height/2.0)/(double)param);
+
+        double step = ((double) width * windowSize) / (double) in.size();
+
+        double heightDiv2 = (height/2);
+        double offset = 0;
+        /*
+        for(int i = 0; i < (int)in.size(); i++) {
+            offset+= step;
+            if(i > 1 && vMonth[i] != vMonth[i - 1]) {
+                cv::line(output, cv::Point(x + offset, y + 1), cv::Point(x + offset, y + height - 1), DEF_BACK_COLOR, 1.0);
+            }
+        }
+
+        offset = 0;
+        */
+        for(int i = 0; i < (int)in.size(); i++) {
+            offset+= step;
+            if(i + 1 < (int)in.size()) {
+                double indic = heightDiv2 - ((in[i] - aver) * sacle);
+                double indic2 = heightDiv2 - ((in[i + 1] - aver) * sacle);
+                cv::line(output, cv::Point(x + offset, y + indic), cv::Point(x + offset + step, y + indic2), lineColor,th);
+            }
+        }
+        /*
+        cv::Rect bbTestWindow(x + 1,y + 1,((double) width * windowSize),height-1);
+        if(checkBB(bbTestWindow) != 0) {
+            cv::line(output, cv::Point(pcMouse.movePosition.x, y + 1), cv::Point(pcMouse.movePosition.x, y + height - 1), cv::Scalar(255,255,255), 1.0);
+            int indexArray = (int)((double)(pcMouse.movePosition.x - x) / (double)step);
+            double indic = heightDiv2 - ((in[indexArray] - aver) * sacle);
+            cv::line(output, cv::Point(x + 1, y + indic), cv::Point(x + width - 1, y + indic), cv::Scalar(255,255,255), 1.0);
+
+            if(pcMouse.movePosition.x > 128) {
+                printTextWithBackYL(std::to_string((unsigned long long)in[indexArray]),cv::Rect(pcMouse.movePosition.x - 1, y + indic - 21,128,20),CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, cv::Scalar(255,255,255));
+                char timeStr[64]; memset(timeStr, 0, 64); sprintf(timeStr,"%.2d.%.2d.%.2d",vYear[indexArray],vMonth[indexArray],vDay[indexArray]);
+                printTextWithBackYL(timeStr,cv::Rect(pcMouse.movePosition.x - 1, y + indic - 1,128,20),CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, cv::Scalar(255,255,255));
+            } else {
+                printTextWithBackYR(std::to_string((unsigned long long)in[indexArray]),cv::Rect(pcMouse.movePosition.x + 1, y + indic - 21,128,20),CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, cv::Scalar(255,255,255));
+                char timeStr[64]; memset(timeStr, 0, 64); sprintf(timeStr,"%.2d.%.2d.%.2d",vYear[indexArray],vMonth[indexArray],vDay[indexArray]);
+                printTextWithBackYR(timeStr,cv::Rect(pcMouse.movePosition.x - 1, y + indic - 1,128,20),CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, cv::Scalar(255,255,255));
+            }
+        }
+
+        */
+
+        cv::putText(output, "MIN: " + std::to_string((int)minData),
+                                cv::Point(x + 10, y + height - 10),
+                                CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255,255,255), 1.0, 8, 0);
+        cv::putText(output, "MAX: " + std::to_string((int)maxData),
+                                cv::Point(x + 10, y + 20),
+                                CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255,255,255), 1.0, 8, 0);
+
+    }
 }

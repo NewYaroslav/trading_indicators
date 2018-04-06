@@ -65,6 +65,31 @@ namespace Indicators {
         #endif
     }
 
+    double SMA::test(double input) {
+        #if(0)
+        data.push_back(input);
+        if((int)data.size() > n) {
+            data.erase(data.begin());
+        }
+        double sum = std::accumulate(data.begin(), data.end(), double(0));
+        sum /= (double)data.size();
+        return sum;
+        #else
+        std::vector<double> _data = data;
+        // рекурентная формула
+        if((int)_data.size() < n) {
+            _data.push_back(input);
+            double sum = std::accumulate(_data.begin(), _data.end(), double(0));
+            sum /= (double)_data.size();
+
+            return sum;
+        } else {
+            double _prevData = prevData - ((_data[0] - input) / (double)n);
+            return _prevData;
+        }
+        #endif
+    }
+
     EMA::EMA() {
         n = 10;
         a = 2.0/(double)(n + 1);
@@ -110,6 +135,18 @@ namespace Indicators {
         }
         prevOut = a * input + (1.0 - a) * prevOut;
         return prevOut;
+    }
+
+    double MMA::test(double input) {
+        std::vector<double> _data = data;
+        if((int)_data.size() < n) {
+            _data.push_back(input);
+            double sum = std::accumulate(_data.begin(), _data.end(), double(0));
+            sum /= (double)n;
+            //prevOut = sum;
+            return sum;
+        }
+        return a * input + (1.0 - a) * prevOut;
     }
 
     SMM::SMM() {
@@ -207,6 +244,30 @@ namespace Indicators {
         return _rsi;
     }
 
+    double WRSI::test(double input) {
+        if(isStart == false) {
+            return 50.0;
+        }
+        double u = 0, d = 0;
+        if (prevInput < input) {
+            u = input - prevInput;
+            d = 0.0;
+        } else
+        if (prevInput > input) {
+            d = prevInput - input;
+            u = 0.0;
+        }
+        u = iU.test(u);
+        d = iD.test(d);
+        //prevInput = input;
+        if (d == 0.0) {
+            return 100.0;
+        }
+        double rs = u / d;
+        double _rsi = 100.0 - (100.0 / (1.0 + rs));
+        return _rsi;
+    }
+
     SRSI::SRSI() {
         n = 5;
         iU = SMM(n);
@@ -268,6 +329,25 @@ namespace Indicators {
             sum +=  diff * diff;
         }
         double stdDev = std::sqrt(sum / (double)(data.size() - 1));
+        stdDev *= d;
+        tl = ml + stdDev;
+        bl = ml - stdDev;
+    }
+
+    void BollingerBands::test(double input) {
+        std::vector<double> _data = data;
+        _data.push_back(input);
+        if((int)_data.size() > n) {
+            _data.erase(_data.begin());
+        }
+        ml = std::accumulate(_data.begin(), _data.end(), double(0));
+        ml /= (double)n;
+        double sum = 0;
+        for (int i = 0; i < (int)_data.size(); i++) {
+            double diff = (data[i] - ml);
+            sum +=  diff * diff;
+        }
+        double stdDev = std::sqrt(sum / (double)(_data.size() - 1));
         stdDev *= d;
         tl = ml + stdDev;
         bl = ml - stdDev;

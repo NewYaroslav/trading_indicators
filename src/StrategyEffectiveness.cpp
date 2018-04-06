@@ -43,6 +43,44 @@ StrategyEffectiveness::StrategyEffectiveness() {
     }
 };
 
+void StrategyEffectiveness::updata() {
+    for(size_t i = 0; i < vRate.size(); i++) {
+        vTick[i]--;
+        if(vTick[i] <= 0) {
+            if(vState[i] == 1) {
+                win++;
+                if(lossState > maxLoss) {
+                    maxLoss = lossState; lossState = 0;
+                }
+                money += vRate[i] + profit * vRate[i];
+                grossprofit += profit * vRate[i];
+                vMoney.push_back(money);
+            } else {
+                loss++;
+                lossState++;
+                grossloss += vRate[i];
+                vMoney.push_back(money);
+            }
+            vRate.erase(vRate.begin() + i);
+            vTick.erase(vTick.begin() + i);
+            vState.erase(vState.begin() + i);
+        }
+    }
+}
+
+void StrategyEffectiveness::setDelayWin() {
+    vRate.push_back(rate * money);
+    vState.push_back(1);
+    vTick.push_back(expTime);
+    money -= rate * money;
+}
+
+void StrategyEffectiveness::setDelayLoss() {
+    vRate.push_back(rate * money);
+    vState.push_back(0);
+    vTick.push_back(expTime);
+    money -= rate * money;
+}
 
 void StrategyEffectiveness::setWin() {
     win++;

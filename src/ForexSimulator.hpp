@@ -82,6 +82,7 @@ namespace ForForex {
         void updata(double open, double high, double low, double close);
         void updata(double bid, double ask);
         double getMoney() {return money;};
+        double getLot(double rate);
         void setSpread(double _spread) {spread = _spread;};
         void setLeverage(int _leverage) {leverage = _leverage;};
         std::vector<double> getVectorMoney() {return vMoney;};

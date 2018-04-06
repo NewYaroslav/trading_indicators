@@ -54,6 +54,12 @@ namespace ForForex {
         vMoney.push_back(startMoney);
     }
 
+    double ForexSimulator::getLot(double rate) {
+        double _money = vMoney.back() * rate;
+        const double LOT1 = 100000.0;
+        return (_money / (LOT1 / (double)leverage));
+    }
+
     int ForexSimulator::OrderSend(eCmd cmd, double volume, double price, double priceReal, double stoploss = 0, double takeprofit = 0, int expiration = -1) {
         return OrderSend(cmd, volume, price, priceReal, priceReal + spread, stoploss, takeprofit, expiration);
 
@@ -367,7 +373,15 @@ namespace ForForex {
                     case OP_BUYLIMIT:
                     case OP_BUYSTOP:
                         vOrder[i].isClose = 1;
-                        vOrder[i].closePrice = bid;
+                        if(vOrder[i].stoploss != 0 && bid <= vOrder[i].stoploss) {
+                            vOrder[i].closePrice = vOrder[i].stoploss;
+                        } else
+                        if(vOrder[i].takeprofit != 0 && bid >= vOrder[i].takeprofit) {
+                            vOrder[i].closePrice = vOrder[i].takeprofit;
+                        } else {
+                            vOrder[i].closePrice = bid;
+                        }
+
                         money += vOrder[i].pledge;
                         pledgeTot -= vOrder[i].pledge;
                         money += calcProfitsLosses(vOrder[i].contract,vOrder[i].openPrice,vOrder[i].closePrice,1);
@@ -377,7 +391,16 @@ namespace ForForex {
                     case OP_SELLLIMIT:
                     case OP_SELLSTOP:
                         vOrder[i].isClose = 1;
-                        vOrder[i].closePrice = ask;
+                        if(vOrder[i].stoploss != 0 && ask >= vOrder[i].stoploss) {
+                            vOrder[i].closePrice = vOrder[i].stoploss;
+                        } else
+                        if(vOrder[i].takeprofit != 0 && ask <= vOrder[i].takeprofit) {
+                            vOrder[i].closePrice = vOrder[i].takeprofit;
+                        } else {
+                            vOrder[i].closePrice = ask;
+                        }
+
+
                         money += vOrder[i].pledge;
                         pledgeTot -= vOrder[i].pledge;
                         money += calcProfitsLosses(vOrder[i].contract,vOrder[i].openPrice,vOrder[i].closePrice,-1);
