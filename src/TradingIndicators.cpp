@@ -1,7 +1,7 @@
 /*
 * trading_indicators - Indicators for technical analysis.
 *
-* Copyright (c) 2018 Yaroslav Barabanov. Email: elektroyar@yandex.ru
+* Copyright (c) 2018 Elektro Yar. Email: git.electroyar@gmail.com
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 #include "TradingIndicators.hpp"
 #include "NormalizationData.hpp"
 #include <iostream>
-#include "Drawing.hpp"
 
 namespace Indicators {
 
@@ -949,12 +948,12 @@ namespace Indicators {
         vExtrema3.push_back(input);
         vExtrema4.push_back(input);
 
-        std::vector<double> vNull;
-        Drawing::drawOscilloscope4xBeam("BasicExtrema", "BasicExtrema", vExtrema, vNull, vNull, vNull, 800, 400, 0);
-        Drawing::drawOscilloscope4xBeam("BasicExtrema - 2", "BasicExtrema - 2", vExtrema2, vNull, vNull, vNull, 800, 400, 0);
-        Drawing::drawOscilloscope4xBeam("BasicExtrema - 3", "BasicExtrema - 3", vExtrema3, vNull, vNull, vNull, 800, 400, 0);
-        Drawing::drawOscilloscope4xBeam("BasicExtrema - 4", "BasicExtrema - 4", vExtrema4, vNull, vNull, vNull, 800, 400, 0);
-        Drawing::drawOscilloscope4xBeam("BasicExtrema2", "BasicExtrema2", data, vNull, vNull, vNull, 800, 400, 0);
+        //std::vector<double> vNull;
+        //Drawing::drawOscilloscope4xBeam("BasicExtrema", "BasicExtrema", vExtrema, vNull, vNull, vNull, 800, 400, 0);
+        //Drawing::drawOscilloscope4xBeam("BasicExtrema - 2", "BasicExtrema - 2", vExtrema2, vNull, vNull, vNull, 800, 400, 0);
+        //Drawing::drawOscilloscope4xBeam("BasicExtrema - 3", "BasicExtrema - 3", vExtrema3, vNull, vNull, vNull, 800, 400, 0);
+        //Drawing::drawOscilloscope4xBeam("BasicExtrema - 4", "BasicExtrema - 4", vExtrema4, vNull, vNull, vNull, 800, 400, 0);
+        //Drawing::drawOscilloscope4xBeam("BasicExtrema2", "BasicExtrema2", data, vNull, vNull, vNull, 800, 400, 0);
     }
 
     ExtremaDetector::ExtremaDetector() {isInit = false; state = 0;};

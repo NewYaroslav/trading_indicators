@@ -309,13 +309,13 @@ namespace Drawing {
         }
         if (stop1 > 0)
         for (int i = 0; i < stop1; i ++) {
-            cv::line(output, cv::Point(i, out1[i]), cv::Point(i + 1, out1[i + 1]), cv::Scalar(255,125,0));
+            cv::line(output, cv::Point(i, out1[i]), cv::Point(i + 1, out1[i + 1]), cv::Scalar(255,0,0));
         }
         for (int i = 0; i < stop2; i ++) {
             cv::line(output, cv::Point(i, out2[i]), cv::Point(i + 1, out2[i + 1]), cv::Scalar(255,255,0));
         }
         for (int i = 0; i < stop3; i ++) {
-            cv::line(output, cv::Point(i, out3[i]), cv::Point(i + 1, out3[i + 1]), cv::Scalar(125,255,0));
+            cv::line(output, cv::Point(i, out3[i]), cv::Point(i + 1, out3[i + 1]), cv::Scalar(0,255,0));
         }
         for (int i = 0; i < stop4; i ++) {
             cv::line(output, cv::Point(i, out4[i]), cv::Point(i + 1, out4[i + 1]), cv::Scalar(0,255,255));

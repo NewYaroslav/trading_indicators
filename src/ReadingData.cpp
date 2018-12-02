@@ -1,7 +1,7 @@
 /*
 * trading_indicators - Indicators for technical analysis.
 *
-* Copyright (c) 2018 Yaroslav Barabanov. Email: elektroyar@yandex.ru
+* Copyright (c) 2018 Elektro Yar. Email: git.electroyar@gmail.com
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -354,6 +354,7 @@ int CurrencyQuote::openFile(std::string name) {
             high.push_back(_high);
             low.push_back(_low);
             close.push_back(_close);
+            //std::cout << close.back() << std::endl;
             //if(close.size() > 100) break;
         }
         break;

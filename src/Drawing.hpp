@@ -1,7 +1,7 @@
 /*
 * trading_indicators - Indicators for technical analysis.
 *
-* Copyright (c) 2018 Yaroslav Barabanov. Email: elektroyar@yandex.ru
+* Copyright (c) 2018 Elektro Yar. Email: git.electroyar@gmail.com
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -150,6 +150,8 @@ namespace Drawing {
     void drawCandleGraphV2(cv::Mat& output, int x, int y, int width, int height, std::vector<CandlesType>& in, cv::Scalar backgroundColor, std::vector<cv::Scalar>& lineColor, int isAutoCircl);
     void viewCandleGraphV2(std::string name, Window& iWind, int width, int height);
     void drawDepositGraphV2(cv::Mat& output, int x, int y, int width, int height, std::vector<double>& in, cv::Scalar backgroundColor, cv::Scalar lineColor, double th);
+
+
 }
 
 #endif // DRAWING_HPP_INCLUDED
